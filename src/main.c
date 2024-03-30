@@ -47,7 +47,6 @@ int main (int argc,char *argv[])
   {
   int count;
   int flags;
-  const char *temp;
 
 #ifdef DATAPATH
   chdir(DATAPATH);
@@ -149,20 +148,7 @@ int main (int argc,char *argv[])
   glDisable(GL_DEPTH_TEST);
   glDepthMask(GL_FALSE);
 
-  if (config.joystick)
-    {
-    numofjoysticks=SDL_NumJoysticks();
-    for (count=0;count<numofjoysticks;count++)
-      {
-      joy[count]=SDL_JoystickOpen(count);
-      temp=SDL_JoystickName(joy[count]);
-      strcpy(joystick[count].name,temp);
-      joystick[count].numofbuttons=SDL_JoystickNumButtons(joy[count]);
-      joystick[count].numofhats=SDL_JoystickNumHats(joy[count]);
-      }
-
-    SDL_JoystickEventState(SDL_IGNORE);
-    }
+  setupjoysticks();
 
   font.texturenum=0;
   font.cursornum=0;
