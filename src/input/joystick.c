@@ -32,8 +32,28 @@ SDL_Joystick *joy[16];
 int joystickenabled;
 int joystickused;
 
+int prevnumofjoysticks = 0;
+
 _joystick joystick[16];
 _prevjoystick prevjoystick[16];
+
+void setupjoysticks(void){
+  const char *temp;
+  if (config.joystick)
+    {
+    numofjoysticks=SDL_NumJoysticks();
+    for (int count=0;count<numofjoysticks;count++)
+      {
+      joy[count]=SDL_JoystickOpen(count);
+      temp=SDL_JoystickName(joy[count]);
+      strcpy(joystick[count].name,temp);
+      joystick[count].numofbuttons=SDL_JoystickNumButtons(joy[count]);
+      joystick[count].numofhats=SDL_JoystickNumHats(joy[count]);
+      }
+
+    SDL_JoystickEventState(SDL_IGNORE);
+    }
+}
 
 void checkjoystick(void)
   {
@@ -42,8 +62,15 @@ void checkjoystick(void)
   if (!config.joystick)
     return;
 
+  prevnumofjoysticks = numofjoysticks;
   for (count=0;count<numofjoysticks;count++)
     memcpy(&prevjoystick[count],&joystick[count],sizeof(joystick[0]));
+
+  numofjoysticks = SDL_NumJoysticks();
+
+  if (prevnumofjoysticks != numofjoysticks){
+      setupjoysticks();
+  }
 
   SDL_JoystickUpdate();
   for (count=0;count<numofjoysticks;count++)
