@@ -12,6 +12,7 @@ find_package(OpenAL REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Vorbis REQUIRED)
 find_package(PNG REQUIRED)
+find_package(yaml REQUIRED)
 find_library(LIBM m)
 
 if(NOT INSTALL_FHS)

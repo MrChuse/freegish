@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../config.h"
 
+#include "yaml.h"
+
 #include "../video/opengl.h"
 
 #include <stdlib.h>
@@ -54,6 +56,73 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../video/texture.h"
 #include "../sdl/video.h"
 
+typedef struct {
+  char* db_server;
+  char* db_pass;
+  char* db_user;
+  char* rail_user;
+  char* rail_pass;
+} Conf;
+
+Conf* readConf(char* filename) {
+  FILE* fh = fopen(filename, "r");
+  yaml_parser_t parser;
+  yaml_token_t token;
+  Conf* conf = malloc(sizeof(Conf));
+
+  if (!yaml_parser_initialize(&parser))
+    fputs("Failed to initialize parser!\n", stderr);
+  if (fh == NULL)
+    fputs("Failed to open file!\n", stderr);
+  yaml_parser_set_input_file(&parser, fh);
+
+  do {
+    /* As this is an example, I'll just use:
+     *  state = 0 = expect key
+     *  state = 1 = expect value
+     */
+    int state = 0;
+    char** datap;
+    char* tk;
+
+    yaml_parser_scan(&parser, &token);
+    switch(token.type)
+    {
+    case YAML_KEY_TOKEN:     state = 0; break;
+    case YAML_VALUE_TOKEN:   state = 1; break;
+    case YAML_SCALAR_TOKEN:
+      tk = token.data.scalar.value;
+      if (state == 0) {
+        /* It's safe to not use strncmp as one string is a literal */
+        if (!strcmp(tk, "db_server")) {
+          datap = &(conf->db_server);
+        } else if (!strcmp(tk, "db_password")) {
+          datap = &(conf->db_pass);
+        } else if (!strcmp(tk, "db_username")) {
+          datap = &(conf->db_user);
+        } else if (!strcmp(tk, "national_rail_username")) {
+          datap = &(conf->rail_user);
+        } else if (!strcmp(tk, "national_rail_password")) {
+          datap = &(conf->rail_pass);
+        } else {
+          printf("Unrecognised key: %s\n", tk);
+        }
+      } else {
+        *datap = strdup(tk);
+      }
+      break;
+    default: break;
+    }
+    if (token.type != YAML_STREAM_END_TOKEN)
+      yaml_token_delete(&token);
+  } while (token.type != YAML_STREAM_END_TOKEN);
+  yaml_token_delete(&token);
+
+  yaml_parser_delete(&parser);
+  fclose(fh);
+  return conf;
+}
+
 void mainmenu(void)
   {
   int count,temp;
@@ -62,6 +131,11 @@ void mainmenu(void)
   char loadfilename[32]="loading00.png";
   char texfilename[32]="text000.png";
   //unsigned int x,y;
+
+  Conf* conf;
+
+  conf = readConf("mods/myfirstmod/config.yaml");
+
 
   srand(time(NULL));
   count=(rand()%11)+1;
@@ -321,6 +395,13 @@ void mainmenu(void)
     sprintf(restext, "%s %i", TXT_NUMOFPLAYERS, game.numofplayers);
     drawtext(restext,(640|TEXT_END),470-16,10,1.0f,1.0f,1.0f,1.0f);
     drawtext("Version 1.53",0,470,10,1.0f,1.0f,1.0f,1.0f);
+
+    drawtext(conf->db_server,0,470-16*6,10,1.0f,1.0f,1.0f,1.0f);
+    drawtext(conf->db_user,0,470-16*5,10,1.0f,1.0f,1.0f,1.0f);
+    drawtext(conf->db_pass,0,470-16*4,10,1.0f,1.0f,1.0f,1.0f);
+    drawtext(conf->rail_user,0,470-16*3,10,1.0f,1.0f,1.0f,1.0f);
+    drawtext(conf->rail_pass,0,470-16*2,10,1.0f,1.0f,1.0f,1.0f);
+
 
     drawtext(TXT_COPYRIGHT,(320|TEXT_CENTER),470,10,0.75f,0.75f,0.75f,1.0f);
 
