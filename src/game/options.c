@@ -55,6 +55,63 @@ void drawkeypickoption(char* text, keyalias keyalias_, int player, int offset, i
       drawtext("?",480,y+offset*16,16,1.0f,1.0f,1.0f,1.0f);
 }
 
+void bindkeyboardkeys(int player, int first_corresponding_keyboard_item){
+    for (int count=0;count<KEYALIAS_LENGTH;count++)
+    if (menuitem[first_corresponding_keyboard_item + count].active){
+        for (int count2=1;count2<SDL_NUM_SCANCODES;count2++)
+        if (keyboardlabel[count2][0]!=0) // label isn't empty
+        if (keyboard[count2] && !prevkeyboard[count2])
+        {
+        control[player].key[count]=count2; // set key
+
+        // for (int other_player=0; other_player<=1; other_player++)
+        // for (int count3=0;count3<KEYALIAS_LENGTH;count3++)
+        // if (count3!=count) // if different action picked
+        // if (control[other_player].key[count3]==count2) // and same key
+        //     control[other_player].key[count3]=0; // then erase other same keys. // Therefore, it keeps keys on different players but on same action
+
+        menuitem[first_corresponding_keyboard_item + count].active=0;
+        }
+        if (keyboard[SCAN_DELETE] && !prevkeyboard[SCAN_DELETE])
+        {
+        control[player].key[count]=0;
+        menuitem[first_corresponding_keyboard_item + count].active=0;
+        }
+    }
+}
+
+void bindjoystickkeys(int player, int first_corresponding_joystick_item){
+    if (control[player].joysticknum!=-1)
+    for (int count=0;count<KEYALIAS_LENGTH;count++)
+    if (menuitem[first_corresponding_joystick_item + count].active)
+      {
+      for (int count2=0;count2<joystick[control[0].joysticknum].numofbuttons;count2++)
+      if (joystick[control[player].joysticknum].button[count2] && !prevjoystick[control[0].joysticknum].button[count2])
+        {
+        control[player].button[count]=count2;
+
+        // if (control[0].joysticknum!=-1)
+        // for (count3=0;count3<KEYALIAS_LENGTH;count3++)
+        // if (count3!=count)
+        // if (control[0].button[count3]==count2)
+        //   control[0].button[count3]=-1;
+        /*
+        if (control[1].joysticknum!=-1)
+        for (count3=0;count3<joystick[control[1].joysticknum].numofbuttons;count3++)
+        if (count3!=count)
+        if (control[1].button[count3]==count2)
+          control[1].button[count3]=-1;
+        */
+        menuitem[first_corresponding_joystick_item + count].active=0;
+        }
+      if (keyboard[SCAN_DELETE] && !prevkeyboard[SCAN_DELETE])
+        {
+        control[0].button[count]=-1;
+        menuitem[first_corresponding_joystick_item + count].active=0;
+        }
+      }
+}
+
 void optionsmenu(void)
   {
   int count,count2,count3;
@@ -293,114 +350,11 @@ void optionsmenu(void)
 
     SDL_GL_SwapWindow(globalwindow);
 
-    for (count=0;count<KEYALIAS_LENGTH;count++)
-    if (menuitem[first_player_keyboard_item + count].active)
-      {
-      for (count2=1;count2<SDL_NUM_SCANCODES;count2++)
-      if (keyboardlabel[count2][0]!=0) // label isn't empty
-      if (keyboard[count2] && !prevkeyboard[count2])
-        {
-        control[0].key[count]=count2; // set key
+    bindkeyboardkeys(0, first_player_keyboard_item);
+    bindkeyboardkeys(1, second_player_keyboard_item);
+    bindjoystickkeys(0, first_player_joystick_item);
+    bindjoystickkeys(1, second_player_joystick_item);
 
-        for (int player=0; player<=1; player++)
-        for (count3=0;count3<KEYALIAS_LENGTH;count3++)
-        if (count3!=count) // if different action picked
-        if (control[player].key[count3]==count2) // and same key
-          control[player].key[count3]=0; // then erase other same keys. Therefore, it keeps keys on different players but on same action
-
-        menuitem[first_player_keyboard_item + count].active=0;
-        }
-      if (keyboard[SCAN_DELETE] && !prevkeyboard[SCAN_DELETE])
-        {
-        control[0].key[count]=0;
-        menuitem[first_player_keyboard_item + count].active=0;
-        }
-      }
-    for (count=0;count<KEYALIAS_LENGTH;count++)
-    if (menuitem[second_player_keyboard_item+count].active)
-      {
-      for (count2=1;count2<SDL_NUM_SCANCODES;count2++)
-      if (keyboardlabel[count2][0]!=0)
-      if (keyboard[count2] && !prevkeyboard[count2])
-        {
-        control[1].key[count]=count2;
-
-        for (count3=0;count3<KEYALIAS_LENGTH;count3++)
-        if (count3!=count)
-        if (control[0].key[count3]==count2)
-          control[0].key[count3]=0;
-
-        for (count3=0;count3<KEYALIAS_LENGTH;count3++)
-        if (count3!=count)
-        if (control[1].key[count3]==count2)
-          control[1].key[count3]=0;
-
-        menuitem[second_player_keyboard_item+count].active=0;
-        }
-      if (keyboard[SCAN_DELETE] && !prevkeyboard[SCAN_DELETE])
-        {
-        control[1].key[count]=0;
-        menuitem[second_player_keyboard_item+count].active=0;
-        }
-      }
-    if (control[0].joysticknum!=-1)
-    for (count=0;count<KEYALIAS_LENGTH;count++)
-    if (menuitem[first_player_joystick_item + count].active)
-      {
-      for (count2=0;count2<joystick[control[0].joysticknum].numofbuttons;count2++)
-      if (joystick[control[0].joysticknum].button[count2] && !prevjoystick[control[0].joysticknum].button[count2])
-        {
-        control[0].button[count]=count2;
-
-        if (control[0].joysticknum!=-1)
-        for (count3=0;count3<KEYALIAS_LENGTH;count3++)
-        if (count3!=count)
-        if (control[0].button[count3]==count2)
-          control[0].button[count3]=-1;
-        /*
-        if (control[1].joysticknum!=-1)
-        for (count3=0;count3<joystick[control[1].joysticknum].numofbuttons;count3++)
-        if (count3!=count)
-        if (control[1].button[count3]==count2)
-          control[1].button[count3]=-1;
-        */
-        menuitem[first_player_joystick_item + count].active=0;
-        }
-      if (keyboard[SCAN_DELETE] && !prevkeyboard[SCAN_DELETE])
-        {
-        control[0].button[count]=-1;
-        menuitem[first_player_joystick_item + count].active=0;
-        }
-      }
-    if (control[1].joysticknum!=-1)
-    for (count=0;count<KEYALIAS_LENGTH;count++)
-    if (menuitem[second_player_joystick_item + count].active)
-      {
-      for (count2=0;count2<joystick[control[1].joysticknum].numofbuttons;count2++)
-      if (joystick[control[1].joysticknum].button[count2] && !prevjoystick[control[1].joysticknum].button[count2])
-        {
-        control[1].button[count]=count2;
-        /*
-        if (control[0].joysticknum!=-1)
-        for (count3=0;count3<8;count3++)
-        if (count3!=count)
-        if (control[0].button[count3]==count2)
-          control[0].button[count3]=-1;
-        */
-        if (control[1].joysticknum!=-1)
-        for (count3=0;count3<KEYALIAS_LENGTH;count3++)
-        if (count3!=count)
-        if (control[1].button[count3]==count2)
-          control[1].button[count3]=-1;
-
-        menuitem[second_player_joystick_item + count].active=0;
-        }
-      if (keyboard[SCAN_DELETE] && !prevkeyboard[SCAN_DELETE])
-        {
-        control[1].button[count]=-1;
-        menuitem[second_player_joystick_item + count].active=0;
-        }
-      }
     if (menuitem[video_options].active)
       videooptionsmenu();
     if (menuitem[four_player_menu].active)
