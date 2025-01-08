@@ -1,0 +1,10 @@
+animation_lengths:
+  stand: 6
+  walk: 9
+  attack: 9
+  die: 9
+animation:
+  stand: nibsta
+  walk: nibwlk
+  attack: nibatk
+  die: nibdie

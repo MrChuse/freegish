@@ -65,24 +65,33 @@ typedef struct {
 } Conf;
 
 Conf* readConf(char* filename) {
-  FILE* fh = fopen(filename, "r");
+  char buf[256];
+  strcpy(buf, filename);
+  FILE* fh = fopen(buf, "r");
+  getcwd(buf, sizeof(buf));
+  if (fh == NULL)
+    strcpy(buf, strerror(errno));
+
+  Conf* conf = malloc(sizeof(Conf));
+  memset(conf, 0, sizeof(Conf));
   yaml_parser_t parser;
   yaml_token_t token;
-  Conf* conf = malloc(sizeof(Conf));
 
   if (!yaml_parser_initialize(&parser))
     fputs("Failed to initialize parser!\n", stderr);
-  if (fh == NULL)
+  if (fh == NULL){
     fputs("Failed to open file!\n", stderr);
+    return NULL;
+  }
   yaml_parser_set_input_file(&parser, fh);
 
+  int state = 0;
+  char** datap;
   do {
     /* As this is an example, I'll just use:
      *  state = 0 = expect key
      *  state = 1 = expect value
      */
-    int state = 0;
-    char** datap;
     char* tk;
 
     yaml_parser_scan(&parser, &token);
@@ -134,7 +143,8 @@ void mainmenu(void)
 
   Conf* conf;
 
-  conf = readConf("mods/myfirstmod/config.yaml");
+  char filename[256] = "config.yaml";
+  conf = readConf(filename);
 
 
   srand(time(NULL));

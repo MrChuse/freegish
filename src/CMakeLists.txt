@@ -132,17 +132,12 @@ else()
     add_executable(freegish ${GISH_SRCS} ${GISH_H})
 endif()
 
-include(CMakePrintHelpers)
-cmake_print_variables(yaml_INCLUDE_DIR)
-cmake_print_variables(yaml_LIBRARY)
-
 target_include_directories(freegish PRIVATE
     ${SDL2_INCLUDE_DIRS}
     ${OPENAL_INCLUDE_DIR}
     ${OPENGL_INCLUDE_DIR}
     ${Vorbis_INCLUDE_DIR}
     ${PNG_INCLUDE_DIR}
-    ${yaml_INCLUDE_DIR}
 )
 
 target_link_libraries(freegish
@@ -151,7 +146,7 @@ target_link_libraries(freegish
     ${OPENGL_LIBRARIES}
     ${Vorbis_LIBRARIES}
     ${PNG_LIBRARIES}
-    ${yaml_LIBRARY}
+	yaml
 )
 
 if(LIBM)
