@@ -38,6 +38,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 _option option;
 _control control[CONTROLS_LENGTH];
 
+void drawkeypickoption(char* text, keyalias keyalias_, int player, int offset, int menuitem_offset, int y){
+    drawtext(text,0,y+offset*16,16,0.75f,0.75f,0.75f,1.0f);
+    if (!menuitem[menuitem_offset+offset].active)
+      drawtext(keyboardlabel[control[player].key[keyalias_]],320,y+offset*16,16,1.0f,1.0f,1.0f,1.0f);
+    else
+      drawtext("?",320,y+offset*16,16,1.0f,1.0f,1.0f,1.0f);
+    if (!menuitem[menuitem_offset+offset+18].active) // 18 = first_player_joystick_item - first_player_keyboard_item
+      {
+      if (control[player].button[offset]!=-1)
+        drawtext(TXT_BUTTON" /i",480,y+offset*16,16,1.0f,1.0f,1.0f,1.0f,control[player].button[offset]+1);
+      else
+        drawtext(TXT_AXIS,480,y+offset*16,16,1.0f,1.0f,1.0f,1.0f);
+      }
+    else
+      drawtext("?",480,y+offset*16,16,1.0f,1.0f,1.0f,1.0f);
+}
+
 void optionsmenu(void)
   {
   int count,count2,count3;
@@ -57,6 +74,8 @@ void optionsmenu(void)
     createmenuitem(TXT_BACK,0,0,16,1.0f,1.0f,1.0f,1.0f);
     setmenuitem(MO_HOTKEY,SCAN_ESC);
     count=144;
+    int first_player_keyboard_item = createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
+    count+=16;
     createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
     count+=16;
     createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
@@ -75,6 +94,8 @@ void optionsmenu(void)
     count+=16;
 
     count=336;
+    int second_player_keyboard_item = createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
+    count+=16;
     createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
     count+=16;
     createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
@@ -93,7 +114,7 @@ void optionsmenu(void)
     count+=16;
 
     count=144;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
+    int first_player_joystick_item = createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
     count+=16;
     createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
     count+=16;
@@ -113,6 +134,8 @@ void optionsmenu(void)
     count+=16;
 
     count=336;
+    int second_player_joystick_item = createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
+    count+=16;
     createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
     count+=16;
     createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
@@ -130,9 +153,9 @@ void optionsmenu(void)
     createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
     count+=16;
 
-    createmenuitem(TXT_VIDEOOPTIONS,320,0,16,1.0f,1.0f,1.0f,1.0f);
+    int video_options = createmenuitem(TXT_VIDEOOPTIONS,320,0,16,1.0f,1.0f,1.0f,1.0f);
     setmenuitem(MO_HOTKEY,SCAN_V);
-    createmenuitem(TXT_4_PLAYER,160,0,16,1.0f,1.0f,1.0f,1.0f);
+    int four_player_menu = createmenuitem(TXT_4_PLAYER,160,0,16,1.0f,1.0f,1.0f,1.0f);
     setmenuitem(MO_HOTKEY,SCAN_4);
 
     count=112;
@@ -228,276 +251,46 @@ void optionsmenu(void)
 
     count2=0;
     count=0;
-    drawtext(TXT_MOVE_LEFT,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_LEFT]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_MOVE_LEFT, KEYALIAS_LEFT, count2, count, first_player_keyboard_item, 144);
     count++;
-
-    drawtext(TXT_MOVE_RIGHT,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_RIGHT]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_MOVE_RIGHT, KEYALIAS_RIGHT, count2, count, first_player_keyboard_item, 144);
     count++;
-
-    drawtext(TXT_MOVE_DOWN,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_DOWN]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_MOVE_DOWN, KEYALIAS_DOWN, count2, count, first_player_keyboard_item, 144);
     count++;
-
-    drawtext(TXT_MOVE_UP,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_UP]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_MOVE_UP, KEYALIAS_UP, count2, count, first_player_keyboard_item, 144);
     count++;
-
-    drawtext(TXT_STICK,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_STICK]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_STICK, KEYALIAS_STICK, count2, count, first_player_keyboard_item, 144);
     count++;
-
-    drawtext(TXT_JUMP,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_JUMP]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_JUMP, KEYALIAS_JUMP, count2, count, first_player_keyboard_item, 144);
     count++;
-
-    drawtext(TXT_SLIDE,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_SLIDE]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_SLIDE, KEYALIAS_SLIDE, count2, count, first_player_keyboard_item, 144);
     count++;
-
-    drawtext(TXT_HEAVY,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_HEAVY]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_HEAVY, KEYALIAS_HEAVY, count2, count, first_player_keyboard_item, 144);
     count++;
-
-    drawtext(TXT_START_PAUSE,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_START_PAUSE, KEYALIAS_START_PAUSE, count2, count, first_player_keyboard_item, 144);
     count++;
 
     drawtext(TXT_PLAYER2,0,304,16,1.0f,1.0f,1.0f,1.0f);
 
     count2=1;
     count=0;
-    drawtext(TXT_MOVE_LEFT,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_LEFT]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_MOVE_LEFT, KEYALIAS_LEFT, count2, count, second_player_keyboard_item, 336);
     count++;
-
-    drawtext(TXT_MOVE_RIGHT,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_RIGHT]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_MOVE_RIGHT, KEYALIAS_RIGHT, count2, count, second_player_keyboard_item, 336);
     count++;
-
-    drawtext(TXT_MOVE_DOWN,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_DOWN]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_MOVE_DOWN, KEYALIAS_DOWN, count2, count, second_player_keyboard_item, 336);
     count++;
-
-    drawtext(TXT_MOVE_UP,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_UP]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_MOVE_UP, KEYALIAS_UP, count2, count, second_player_keyboard_item, 336);
     count++;
-
-    drawtext(TXT_STICK,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_STICK]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_STICK, KEYALIAS_STICK, count2, count, second_player_keyboard_item, 336);
     count++;
-
-    drawtext(TXT_JUMP,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_JUMP]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_JUMP, KEYALIAS_JUMP, count2, count, second_player_keyboard_item, 336);
     count++;
-
-    drawtext(TXT_SLIDE,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_SLIDE]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_SLIDE, KEYALIAS_SLIDE, count2, count, second_player_keyboard_item, 336);
     count++;
-
-    drawtext(TXT_HEAVY,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_HEAVY]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
+    drawkeypickoption(TXT_HEAVY, KEYALIAS_HEAVY, count2, count, second_player_keyboard_item, 336);
+    count++;
+    drawkeypickoption(TXT_START_PAUSE, KEYALIAS_START_PAUSE, count2, count, second_player_keyboard_item, 336);
     count++;
 
     if (control[0].joysticknum!=-1)
@@ -514,34 +307,30 @@ void optionsmenu(void)
     SDL_GL_SwapWindow(globalwindow);
 
     for (count=0;count<KEYALIAS_LENGTH;count++)
-    if (menuitem[count+1].active)
+    if (menuitem[first_player_keyboard_item + count].active)
       {
       for (count2=1;count2<SDL_NUM_SCANCODES;count2++)
-      if (keyboardlabel[count2][0]!=0)
+      if (keyboardlabel[count2][0]!=0) // label isn't empty
       if (keyboard[count2] && !prevkeyboard[count2])
         {
-        control[0].key[count]=count2;
+        control[0].key[count]=count2; // set key
 
-        for (count3=0;count3<8;count3++)
-        if (count3!=count)
-        if (control[0].key[count3]==count2)
-          control[0].key[count3]=0;
+        for (int player=0; player<=1; player++)
+        for (count3=0;count3<KEYALIAS_LENGTH;count3++)
+        if (count3!=count) // if different action picked
+        if (control[player].key[count3]==count2) // and same key
+          control[player].key[count3]=0; // then erase other same keys. Therefore, it keeps keys on different players but on same action
 
-        for (count3=0;count3<8;count3++)
-        if (count3!=count)
-        if (control[1].key[count3]==count2)
-          control[1].key[count3]=0;
-
-        menuitem[count+1].active=0;
+        menuitem[first_player_keyboard_item + count].active=0;
         }
       if (keyboard[SCAN_DELETE] && !prevkeyboard[SCAN_DELETE])
         {
         control[0].key[count]=0;
-        menuitem[count+1].active=0;
+        menuitem[first_player_keyboard_item + count].active=0;
         }
       }
-    for (count=0;count<8;count++)
-    if (menuitem[count+9].active)
+    for (count=0;count<KEYALIAS_LENGTH;count++)
+    if (menuitem[second_player_keyboard_item+count].active)
       {
       for (count2=1;count2<SDL_NUM_SCANCODES;count2++)
       if (keyboardlabel[count2][0]!=0)
@@ -554,22 +343,22 @@ void optionsmenu(void)
         if (control[0].key[count3]==count2)
           control[0].key[count3]=0;
 
-        for (count3=0;count3<8;count3++)
+        for (count3=0;count3<KEYALIAS_LENGTH;count3++)
         if (count3!=count)
         if (control[1].key[count3]==count2)
           control[1].key[count3]=0;
 
-        menuitem[count+9].active=0;
+        menuitem[second_player_keyboard_item+count].active=0;
         }
       if (keyboard[SCAN_DELETE] && !prevkeyboard[SCAN_DELETE])
         {
         control[1].key[count]=0;
-        menuitem[count+9].active=0;
+        menuitem[second_player_keyboard_item+count].active=0;
         }
       }
     if (control[0].joysticknum!=-1)
-    for (count=0;count<9;count++)
-    if (menuitem[count+17].active)
+    for (count=0;count<KEYALIAS_LENGTH;count++)
+    if (menuitem[first_player_joystick_item + count].active)
       {
       for (count2=0;count2<joystick[control[0].joysticknum].numofbuttons;count2++)
       if (joystick[control[0].joysticknum].button[count2] && !prevjoystick[control[0].joysticknum].button[count2])
@@ -577,7 +366,7 @@ void optionsmenu(void)
         control[0].button[count]=count2;
 
         if (control[0].joysticknum!=-1)
-        for (count3=0;count3<joystick[control[0].joysticknum].numofbuttons;count3++)
+        for (count3=0;count3<KEYALIAS_LENGTH;count3++)
         if (count3!=count)
         if (control[0].button[count3]==count2)
           control[0].button[count3]=-1;
@@ -588,17 +377,17 @@ void optionsmenu(void)
         if (control[1].button[count3]==count2)
           control[1].button[count3]=-1;
         */
-        menuitem[count+17].active=0;
+        menuitem[first_player_joystick_item + count].active=0;
         }
       if (keyboard[SCAN_DELETE] && !prevkeyboard[SCAN_DELETE])
         {
         control[0].button[count]=-1;
-        menuitem[count+17].active=0;
+        menuitem[first_player_joystick_item + count].active=0;
         }
       }
     if (control[1].joysticknum!=-1)
-    for (count=0;count<8;count++)
-    if (menuitem[count+26].active)
+    for (count=0;count<KEYALIAS_LENGTH;count++)
+    if (menuitem[second_player_joystick_item + count].active)
       {
       for (count2=0;count2<joystick[control[1].joysticknum].numofbuttons;count2++)
       if (joystick[control[1].joysticknum].button[count2] && !prevjoystick[control[1].joysticknum].button[count2])
@@ -612,22 +401,22 @@ void optionsmenu(void)
           control[0].button[count3]=-1;
         */
         if (control[1].joysticknum!=-1)
-        for (count3=0;count3<8;count3++)
+        for (count3=0;count3<KEYALIAS_LENGTH;count3++)
         if (count3!=count)
         if (control[1].button[count3]==count2)
           control[1].button[count3]=-1;
 
-        menuitem[count+26].active=0;
+        menuitem[second_player_joystick_item + count].active=0;
         }
       if (keyboard[SCAN_DELETE] && !prevkeyboard[SCAN_DELETE])
         {
         control[1].button[count]=-1;
-        menuitem[count+26].active=0;
+        menuitem[second_player_joystick_item + count].active=0;
         }
       }
-    if (menuitem[34].active)
+    if (menuitem[video_options].active)
       videooptionsmenu();
-    if (menuitem[35].active)
+    if (menuitem[four_player_menu].active)
       optionsmenu2();
 
     if (mouse.lmb)
