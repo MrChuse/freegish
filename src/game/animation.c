@@ -421,15 +421,15 @@ void loadheadpart(int* numberinanimationpart, char* filename, int framenum){
     numofanimations++;
 }
 
-void loadanimation(int animationnum, char* standname, char* walkname, char* attackname, char* diename, int head_needed, char* headname){
+void loadanimation(int animationnum, char* standname, int standlength, char* walkname, int walklength, char* attackname, int attacklength, char* diename, int dielength, int head_needed, char* headname){
     if (animation[animationnum].loaded!=2) return;
 
     animation[animationnum].loaded=1;
 
-    loadanimationpart(standname, animation[animationnum].stand, 6);
-    loadanimationpart(walkname, animation[animationnum].walk, 9);
-    loadanimationpart(attackname, animation[animationnum].attack, 9);
-    loadanimationpart(diename, animation[animationnum].die, 9);
+    loadanimationpart(standname, animation[animationnum].stand, standlength);
+    loadanimationpart(walkname, animation[animationnum].walk, walklength);
+    loadanimationpart(attackname, animation[animationnum].attack, attacklength);
+    loadanimationpart(diename, animation[animationnum].die, dielength);
 
     if (head_needed){
         animationnum+=32;
@@ -440,8 +440,8 @@ void loadanimation(int animationnum, char* standname, char* walkname, char* atta
         loadheadpart(&animation[animationnum].stand[0], filename, 1);
         loadheadpart(&animation[animationnum].walk[0], filename, 2);
         loadheadpart(&animation[animationnum].attack[0], filename, 3);
-        loadheadpart(&animation[animationnum].stand[1], filename, 4);
-        loadheadpart(&animation[animationnum].die[0], filename, 5);
+        loadheadpart(&animation[animationnum].stand[1], filename, 5);
+        loadheadpart(&animation[animationnum].die[0], filename, 6);
     }
 }
 
@@ -451,23 +451,23 @@ void loadanimations(void)
 
   changeddir=chdir("animation");
 
-  loadanimation(0, "bibsta", "bibwlk", "bibatk", "nibdie", 0, "");
-  loadanimation(1, "nibsta", "nibwlk", "nibatk", "nibdie", 0, "");
-  loadanimation(2, "ribsta", "ribwlk", "ribatk", "ribdie", 0, "");
-  loadanimation(3, "mumsta", "mumwlk", "mumatk", "mumdie", 1, "mumhed01.png");
-  loadanimation(4, "sklsta", "sklwlk", "sklatk", "skldie", 1, "sklhed01.png");
-  loadanimation(5, "zomsta", "zomwlk", "zomatk", "zomdie", 1, "zomhed01.png");
-  loadanimation(6, "gimsta", "gimwlk", "gimatk", "gimdie", 1, "gimhed01.png");
-  loadanimation(7, "vissta", "viswlk", "visatk", "visdie", 0, "");
-  loadanimation(8, "aibsta", "aibwlk", "aibatk", "aibdie", 0, "");
-  loadanimation(9, "altsta", "altwlk", "altatk", "altdie", 1, "gimhed01.png");
-  loadanimation(10, "frksta", "frkwlk", "frkatk", "frkdie", 1, "frkhed01.png");
-  loadanimation(11, "pibsta", "pibwlk", "pibatk", "pibdie", 0, "");
-  loadanimation(12, "sepsta", "sepspw", "sepatk", "sepdie", 0, "");
-  loadanimation(13, "sissta", "siswlk", "sisatk", "sisdie", 0, "");
-  loadanimation(14, "ghosta", "ghowlk", "ghoatk", "ghodie", 0, "");
-  loadanimation(15, "bassta", "baswlk", "basatk", "basdie", 0, "");
-  loadanimation(16, "satsta", "satwlk", "satatk", "ribdie", 0, "");
+  loadanimation(0,  "bibsta", 6, "bibwlk", 9, "bibatk", 9, "nibdie", 9, 0, "");
+  loadanimation(1,  "nibsta", 6, "nibwlk", 9, "nibatk", 9, "nibdie", 9, 0, "");
+  loadanimation(2,  "ribsta", 6, "ribwlk", 9, "ribatk", 9, "ribdie", 9, 0, "");
+  loadanimation(3,  "mumsta", 6, "mumwlk", 9, "mumatk", 9, "mumdie", 9, 1, "mumhed01.png");
+  loadanimation(4,  "sklsta", 6, "sklwlk", 9, "sklatk", 9, "skldie", 9, 1, "sklhed01.png");
+  loadanimation(5,  "zomsta", 6, "zomwlk", 9, "zomatk", 9, "zomdie", 9, 1, "zomhed01.png");
+  loadanimation(6,  "gimsta", 6, "gimwlk", 9, "gimatk", 9, "gimdie", 9, 1, "gimhed01.png");
+  loadanimation(7,  "vissta", 6, "viswlk", 9, "visatk", 9, "visdie", 9, 0, "");
+  loadanimation(8,  "aibsta", 6, "aibwlk", 9, "aibatk", 9, "aibdie", 9, 0, "");
+  loadanimation(9,  "altsta", 6, "altwlk", 9, "altatk", 9, "altdie", 9, 1, "gimhed01.png");
+  loadanimation(10, "frksta", 6, "frkwlk", 9, "frkatk", 9, "frkdie", 9, 1, "frkhed01.png");
+  loadanimation(11, "pibsta", 6, "pibwlk", 9, "pibatk", 9, "pibdie", 9, 0, "");
+  loadanimation(12, "sepsta", 6, "sepspw", 9, "sepatk", 8, "sepdie", 9, 0, "");
+  loadanimation(13, "sissta", 6, "siswlk", 9, "sisatk", 9, "sisdie", 9, 0, "");
+  loadanimation(14, "ghosta", 5, "ghowlk", 5, "ghoatk", 8, "ghodie", 9, 0, "");
+  loadanimation(15, "bassta", 6, "baswlk", 9, "basatk", 9, "basdie", 9, 0, "");
+  loadanimation(16, "satsta", 6, "satwlk", 9, "satatk", 9, "ribdie", 9, 0, "");
 
   if (changeddir==0)
     chdir("..");

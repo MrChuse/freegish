@@ -215,12 +215,10 @@ void optionsmenu(void)
     checkjoystick();
     checkmenuitems();
 
-    if (control[0].joysticknum>=numofjoysticks)
-      control[0].joysticknum=-1;
-    if (control[1].joysticknum>=numofjoysticks)
-      control[1].joysticknum=-1;
-
     setuptextdisplay();
+
+    drawtext(TXT_JOYSTICKS,480,60,10,1.0f,1.0f,1.0f,1.0f);
+    drawtext(TXT_CONNECTED": /i",480,70,10,1.0f,1.0f,1.0f,1.0f, numofjoysticks);
 
     drawtext(TXT_PLAYER,0,80,16,1.0f,1.0f,1.0f,1.0f);
     drawtext(TXT_KEY,320,80,16,1.0f,1.0f,1.0f,1.0f);
@@ -1052,11 +1050,6 @@ void optionsmenu2(void)
     checkmouse();
     checkjoystick();
     checkmenuitems();
-
-    if (control[2].joysticknum>=numofjoysticks)
-      control[2].joysticknum=-1;
-    if (control[3].joysticknum>=numofjoysticks)
-      control[3].joysticknum=-1;
 
     setuptextdisplay();
 
