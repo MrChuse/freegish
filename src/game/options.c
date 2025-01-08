@@ -247,51 +247,38 @@ void optionsmenu(void)
     drawtext(TXT_KEY,320,80,16,1.0f,1.0f,1.0f,1.0f);
     drawtext(TXT_JOYSTICK,480,80,16,1.0f,1.0f,1.0f,1.0f);
 
+    char* keypickoptions[KEYALIAS_LENGTH] = {
+        TXT_MOVE_LEFT,
+        TXT_MOVE_RIGHT,
+        TXT_MOVE_DOWN,
+        TXT_MOVE_UP,
+        TXT_STICK,
+        TXT_JUMP,
+        TXT_SLIDE,
+        TXT_HEAVY,
+        TXT_START_PAUSE
+    };
+    keyalias keyaliases[KEYALIAS_LENGTH] = { // keyaliases are literally equal to counts....
+        KEYALIAS_LEFT,
+        KEYALIAS_RIGHT,
+        KEYALIAS_DOWN,
+        KEYALIAS_UP,
+        KEYALIAS_STICK,
+        KEYALIAS_JUMP,
+        KEYALIAS_SLIDE,
+        KEYALIAS_HEAVY,
+        KEYALIAS_START_PAUSE
+    };
+    int item_indexes[2] = {first_player_keyboard_item, second_player_keyboard_item};
+    int ys[2] = {144, 336};
+
     drawtext(TXT_PLAYER1,0,112,16,1.0f,1.0f,1.0f,1.0f);
-
-    count2=0;
-    count=0;
-    drawkeypickoption(TXT_MOVE_LEFT, KEYALIAS_LEFT, count2, count, first_player_keyboard_item, 144);
-    count++;
-    drawkeypickoption(TXT_MOVE_RIGHT, KEYALIAS_RIGHT, count2, count, first_player_keyboard_item, 144);
-    count++;
-    drawkeypickoption(TXT_MOVE_DOWN, KEYALIAS_DOWN, count2, count, first_player_keyboard_item, 144);
-    count++;
-    drawkeypickoption(TXT_MOVE_UP, KEYALIAS_UP, count2, count, first_player_keyboard_item, 144);
-    count++;
-    drawkeypickoption(TXT_STICK, KEYALIAS_STICK, count2, count, first_player_keyboard_item, 144);
-    count++;
-    drawkeypickoption(TXT_JUMP, KEYALIAS_JUMP, count2, count, first_player_keyboard_item, 144);
-    count++;
-    drawkeypickoption(TXT_SLIDE, KEYALIAS_SLIDE, count2, count, first_player_keyboard_item, 144);
-    count++;
-    drawkeypickoption(TXT_HEAVY, KEYALIAS_HEAVY, count2, count, first_player_keyboard_item, 144);
-    count++;
-    drawkeypickoption(TXT_START_PAUSE, KEYALIAS_START_PAUSE, count2, count, first_player_keyboard_item, 144);
-    count++;
-
     drawtext(TXT_PLAYER2,0,304,16,1.0f,1.0f,1.0f,1.0f);
-
-    count2=1;
-    count=0;
-    drawkeypickoption(TXT_MOVE_LEFT, KEYALIAS_LEFT, count2, count, second_player_keyboard_item, 336);
-    count++;
-    drawkeypickoption(TXT_MOVE_RIGHT, KEYALIAS_RIGHT, count2, count, second_player_keyboard_item, 336);
-    count++;
-    drawkeypickoption(TXT_MOVE_DOWN, KEYALIAS_DOWN, count2, count, second_player_keyboard_item, 336);
-    count++;
-    drawkeypickoption(TXT_MOVE_UP, KEYALIAS_UP, count2, count, second_player_keyboard_item, 336);
-    count++;
-    drawkeypickoption(TXT_STICK, KEYALIAS_STICK, count2, count, second_player_keyboard_item, 336);
-    count++;
-    drawkeypickoption(TXT_JUMP, KEYALIAS_JUMP, count2, count, second_player_keyboard_item, 336);
-    count++;
-    drawkeypickoption(TXT_SLIDE, KEYALIAS_SLIDE, count2, count, second_player_keyboard_item, 336);
-    count++;
-    drawkeypickoption(TXT_HEAVY, KEYALIAS_HEAVY, count2, count, second_player_keyboard_item, 336);
-    count++;
-    drawkeypickoption(TXT_START_PAUSE, KEYALIAS_START_PAUSE, count2, count, second_player_keyboard_item, 336);
-    count++;
+    for (count2=0; count2 < 2; count2++){
+        for (count=0; count < KEYALIAS_LENGTH; count++){
+            drawkeypickoption(keypickoptions[count], keyaliases[count], count2, count, item_indexes[count2], ys[count2]);
+        }
+    }
 
     if (control[0].joysticknum!=-1)
       drawtext(joystick[control[0].joysticknum].name,480,128,10,0.5f,0.5f,0.5f,1.0f);
