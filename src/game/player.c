@@ -42,6 +42,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../game/music.h"
 #include "../game/replay.h"
 #include "../game/setup.h"
+#include "../game/options.h"
 #include "../audio/audio.h"
 #include "../input/joystick.h"
 #include "../input/keyboard.h"
@@ -259,7 +260,7 @@ void saveplayers(void)
 
   if ((fp=fopen(userpath(path,NULL,"gish.pla"),"wb"))!=NULL)
     {
-    version=3;
+    version=4;
     fwrite2(&version,4,1,fp);
     for (count=0;count<8;count++)
       {
@@ -271,52 +272,78 @@ void saveplayers(void)
       fwrite2(&player[count].gamepassed,4,1,fp);
       fwrite2(&player[count].highscore,4,1,fp);
       fwrite2(player[count].unlock,4,16,fp);
+      fwrite2(&player[count].numplayers,4,1,fp);
+      fwrite2(player[count].is_joystick, 4, 4, fp);
+      fwrite2(player[count].presets, 4, 4, fp);
       }
     fclose(fp);
     }
   }
 
-void loadplayers(void)
-  {
-  int count;
-  int version;
-  FILE *fp;
-  char path[PATH_MAX];
+void loadplayers(void){
+    int count;
+    int version;
+    FILE *fp;
+    char path[PATH_MAX];
 
-  if ((fp=fopen(userpath(path,NULL,"gish.pla"),"rb"))!=NULL)
-    {
-    fread2(&version,4,1,fp);
-    if (version==2)
-      {
-      for (count=0;count<8;count++)
-        {
-        fread2(player[count].name,1,32,fp);
-        fread2(&player[count].levelnum,4,1,fp);
-        fread2(&player[count].numoflives,4,1,fp);
-        fread2(&player[count].totalscore,4,1,fp);
-        player[count].difficulty=DIFFICULTY_NORMAL;
-        fread2(&player[count].gamepassed,4,1,fp);
-        fread2(&player[count].highscore,4,1,fp);
-        fread2(player[count].unlock,4,16,fp);
-        }
-      }
-    if (version==3)
-      {
-      for (count=0;count<8;count++)
-        {
-        fread2(player[count].name,1,32,fp);
-        fread2(&player[count].levelnum,4,1,fp);
-        fread2(&player[count].numoflives,4,1,fp);
-        fread2(&player[count].totalscore,4,1,fp);
-        fread2(&player[count].difficulty,4,1,fp);
-        fread2(&player[count].gamepassed,4,1,fp);
-        fread2(&player[count].highscore,4,1,fp);
-        fread2(player[count].unlock,4,16,fp);
-        }
-      }
-    fclose(fp);
+    for (count=0;count<8;count++){
+        player[count].numplayers = 1;
     }
-  }
+
+    if ((fp=fopen(userpath(path,NULL,"gish.pla"),"rb"))!=NULL){
+        fread2(&version,4,1,fp);
+        if (version==2){
+            for (count=0;count<8;count++){
+                fread2(player[count].name,1,32,fp);
+                fread2(&player[count].levelnum,4,1,fp);
+                fread2(&player[count].numoflives,4,1,fp);
+                fread2(&player[count].totalscore,4,1,fp);
+                player[count].difficulty=DIFFICULTY_NORMAL;
+                fread2(&player[count].gamepassed,4,1,fp);
+                fread2(&player[count].highscore,4,1,fp);
+                fread2(player[count].unlock,4,16,fp);
+                player[count].numplayers = 1;
+                for (int count2 = 0; count2 < 4; count2++){
+                    player[count].is_joystick[count2] = -1;
+                    player[count].presets[count2] = -1;
+                }
+            }
+        }
+        if (version==3){
+            for (count=0;count<8;count++){
+                fread2(player[count].name,1,32,fp);
+                fread2(&player[count].levelnum,4,1,fp);
+                fread2(&player[count].numoflives,4,1,fp);
+                fread2(&player[count].totalscore,4,1,fp);
+                fread2(&player[count].difficulty,4,1,fp);
+                fread2(&player[count].gamepassed,4,1,fp);
+                fread2(&player[count].highscore,4,1,fp);
+                fread2(player[count].unlock,4,16,fp);
+                player[count].numplayers = 1;
+                for (int count2 = 0; count2 < 4; count2++){
+                    player[count].is_joystick[count2] = -1;
+                    player[count].presets[count2] = -1;
+                }
+            }
+        }
+        if (version == 4) {
+            for (count=0;count<8;count++) {
+                fread2(player[count].name,1,32,fp);
+                fread2(&player[count].levelnum,4,1,fp);
+                fread2(&player[count].numoflives,4,1,fp);
+                fread2(&player[count].totalscore,4,1,fp);
+                fread2(&player[count].difficulty,4,1,fp);
+                fread2(&player[count].gamepassed,4,1,fp);
+                fread2(&player[count].highscore,4,1,fp);
+                fread2(player[count].unlock,4,16,fp);
+                fread2(&player[count].numplayers,4,1,fp);
+                fread2(player[count].is_joystick,4,4,fp);
+                fread2(player[count].presets,4,4,fp);
+            }
+        }
+        fclose(fp);
+      }
+}
 
 void playerstartmenu(void)
   {
@@ -329,8 +356,7 @@ void playerstartmenu(void)
 
   joymenunum=1;
 
-  while (!menuitem[0].active && !windowinfo.shutdown)
-    {
+  while (!menuitem[0].active && !windowinfo.shutdown){
     glClearColor(0.0f,0.0f,0.0f,0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -339,60 +365,38 @@ void playerstartmenu(void)
     setmenuitem(MO_HOTKEY,SCAN_ESC);
 
     count=352;
-    if (player[playernum].levelnum>0)
-      {
-      createmenuitem(TXT_CONTINUE,48,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_HOTKEY,SCAN_C);
-      count+=16;
-      createmenuitem(TXT_COLLECTION_GAME,48,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_HOTKEY,SCAN_O);
-      count+=16;
-      createmenuitem(TXT_NEW_GAME,48,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_HOTKEY,SCAN_N);
-      count+=16;
-      createmenuitem(TXT_PRACTICE,48,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_HOTKEY,SCAN_P);
-      count+=16;
-      createmenuitem(TXT_REPLAY,48,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_HOTKEY,SCAN_R);
-      count+=16;
-      if (player[playernum].gamepassed){
-        createmenuitem(TXT_SINGLE_LEVEL,48,count,16,1.0f,1.0f,1.0f,1.0f);
+    if (player[playernum].levelnum>0){
+        createmenuitem(TXT_CONTINUE,48,count,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_HOTKEY,SCAN_C);
+        count+=16;
+        createmenuitem(TXT_NEW_GAME,48,count,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_HOTKEY,SCAN_N);
+        count+=16;
+    }
+    else{
+        createmenuitem(TXT_NEW_GAME,48,count,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_HOTKEY,SCAN_N);
+        count+=16;
+        createmenuitemempty();
+    }
+    createmenuitem(TXT_COLLECTION_GAME,48,count,16,1.0f,1.0f,1.0f,1.0f);
+    setmenuitem(MO_HOTKEY,SCAN_O);
+    count+=16;
+    createmenuitem(TXT_PRACTICE,48,count,16,1.0f,1.0f,1.0f,1.0f);
+    setmenuitem(MO_HOTKEY,SCAN_P);
+    count+=16;
+    createmenuitem(TXT_REPLAY,48,count,16,1.0f,1.0f,1.0f,1.0f);
+    setmenuitem(MO_HOTKEY,SCAN_R);
+    count+=16;
+    int single_level = -1;
+    if (player[playernum].gamepassed){
+        single_level = createmenuitem(TXT_SINGLE_LEVEL,48,count,16,1.0f,1.0f,1.0f,1.0f);
         setmenuitem(MO_HOTKEY,SCAN_S);
         count+=16;
-      }
-      else
-        createmenuitemempty();
-      createmenuitem(TXT_CUSTOM_LEVELS,48,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_HOTKEY,SCAN_U);
-      count+=16;
-      }
+    }
     else
-      {
-      createmenuitem(TXT_NEW_GAME,48,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_HOTKEY,SCAN_N);
-      count+=16;
-      createmenuitem(TXT_COLLECTION_GAME,48,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_HOTKEY,SCAN_O);
-      count+=16;
-      createmenuitemempty();
-      createmenuitem(TXT_PRACTICE,48,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_HOTKEY,SCAN_P);
-      count+=16;
-      createmenuitem(TXT_REPLAY,48,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_HOTKEY,SCAN_R);
-      count+=16;
-      if (player[playernum].gamepassed){
-        createmenuitem(TXT_SINGLE_LEVEL,48,count,16,1.0f,1.0f,1.0f,1.0f);
-        setmenuitem(MO_HOTKEY,SCAN_S);
-        count+=16;
-      }
-      else
         createmenuitemempty();
-      createmenuitem(TXT_CUSTOM_LEVELS,48,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_HOTKEY,SCAN_U);
-      count+=16;
-      }
+    int change_players = createmenuitem(TXT_CHANGE_PLAYERS,480|TEXT_CENTER,352+32,16,1.0f,1.0f,1.0f,1.0f);
 
     checksystemmessages();
     checkkeyboard();
@@ -418,6 +422,8 @@ void playerstartmenu(void)
     if (debug_unlocks)
     for (count = 0; count < 16; count++)
       drawtext("/i",432+count/8*16,352+16*count%8,16,1.0f,1.0f,1.0f,1.0f, player[playernum].unlock[count]);
+
+    drawtext(TXT_NUMOFPLAYERS" /i",460|TEXT_CENTER,352,10,1.0f,1.0f,1.0f,1.0f, player[playernum].numplayers);
 
     if (!player[playernum].gamepassed)
       {
@@ -461,6 +467,7 @@ void playerstartmenu(void)
 
     SDL_GL_SwapWindow(globalwindow);
 
+    // new game if 0 levels or continue if already played
     if (menuitem[1].active)
       {
       if (player[playernum].levelnum>0)
@@ -496,6 +503,8 @@ void playerstartmenu(void)
       game.songnum=-1;
       checkmusic();
 
+      bind_presets_to_controls(player[playernum].numplayers, player[playernum].is_joystick, player[playernum].presets);
+      game.numofplayers = player[playernum].numplayers;
       pregamemenu();
 
       player[playernum].levelnum=game.levelnum;
@@ -526,13 +535,8 @@ void playerstartmenu(void)
 
       newgamebypass:;
       }
+    // new game but already played
     if (menuitem[2].active)
-      {
-      collectionmenu();
-
-      //menuitem[0].active=1;
-      }
-    if (menuitem[3].active)
       {
       playerdifficultymenu();
       if (game.difficulty==-1)
@@ -557,6 +561,8 @@ void playerstartmenu(void)
       game.songnum=-1;
       checkmusic();
 
+      bind_presets_to_controls(player[playernum].numplayers, player[playernum].is_joystick, player[playernum].presets);
+      game.numofplayers = player[playernum].numplayers;
       pregamemenu();
 
       player[playernum].levelnum=game.levelnum;
@@ -587,6 +593,9 @@ void playerstartmenu(void)
 
       newgamebypass2:;
       }
+    if (menuitem[3].active){
+      collectionmenu();
+    }
     if (menuitem[4].active)
       {
       game.songnum=-1;
@@ -608,11 +617,16 @@ void playerstartmenu(void)
       {
       singlelevelmenu();
       }
-    if (menuitem[7].active)
+
+    if (single_level != -1)
+    if (menuitem[single_level].active)
       {
       custommenu();
       }
+    if (menuitem[change_players].active){
+        setup_presets_to_players(&player[playernum].numplayers, player[playernum].is_joystick, player[playernum].presets, 1);
     }
+  }
 
   resetmenuitems();
   }

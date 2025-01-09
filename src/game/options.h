@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../input/keyboard.h"
 
 #define CONTROLS_LENGTH 4
+#define PRESETS_LENGTH 16
 
 void optionsmenu(void);
 void videooptionsmenu(void);
@@ -55,6 +56,7 @@ typedef struct
 
 typedef struct
   {
+  char name[32];
   keyboardkey key[KEYALIAS_LENGTH];
   int joysticknum;
   int axis[4];
@@ -63,5 +65,9 @@ typedef struct
 
 extern _option option;
 extern _control control[CONTROLS_LENGTH];
+extern _control keyboardpresets[PRESETS_LENGTH];
+extern _control joystickpresets[PRESETS_LENGTH];
+extern int numkeyboardpresets;
+extern int numjoystickpresets;
 
 #endif /* GISH_GAME_OPTIONS_H */
