@@ -215,9 +215,9 @@ void optionsmenu(void){
   int count,count2,count3;
   int x;
   count=0;
+  int deletepreset = 0;
 
   joystickmenu=0;
-
   resetmenuitems();
 
   while (!menuitem[0].active && !windowinfo.shutdown)
@@ -243,11 +243,12 @@ void optionsmenu(void){
 
     int create_new_joystick_preset = createmenuitem(TXT_NEW_PRESET,320,140 + 40 * count,16,1.0f,1.0f,1.0f,1.0f);
 
+    int preset_name_input = -1;
     int create_button = -1;
     x = 16;
     if (clicked_keyboard_preset != -1){
         count=140+clicked_keyboard_preset*40-16;
-        createmenuitem("                ",x,count,16,1.0f,1.0f,1.0f,1.0f);
+        preset_name_input = createmenuitem("                ",x,count,16,1.0f,1.0f,1.0f,1.0f);
         setmenuitem(MO_STRINGINPUT,keyboardpresets[clicked_keyboard_preset].name);
         menuitem[numofmenuitems-1].active = 1;
         if (keyboardpresets[clicked_keyboard_preset].name[0]!=0){
@@ -257,18 +258,18 @@ void optionsmenu(void){
     x = 320;
     if (clicked_joystick_preset != -1){
         count=140+clicked_joystick_preset*40-16;
-        createmenuitem("                ",x,count,16,1.0f,1.0f,1.0f,1.0f);
+        preset_name_input = createmenuitem("                ",x,count,16,1.0f,1.0f,1.0f,1.0f);
         setmenuitem(MO_STRINGINPUT,joystickpresets[clicked_joystick_preset].name);
         menuitem[numofmenuitems-1].active = 1;
         if (joystickpresets[clicked_joystick_preset].name[0]!=0){
             create_button = createmenuitem(TXT_CREATE,x,count+32,16,1.0f,1.0f,1.0f,1.0f);
         }
     }
+    int delete_preset = createmenuitem(TXT_DELETE_PRESET,320|TEXT_CENTER,140 + max(numkeyboardpresets, numjoystickpresets) * 40 + 32,16,1.0f,1.0f,1.0f,1.0f);
+    setmenuitem(MO_TOGGLE, &deletepreset);
 
     int video_options = createmenuitem(TXT_VIDEOOPTIONS,320,0,16,1.0f,1.0f,1.0f,1.0f);
     setmenuitem(MO_HOTKEY,SCAN_V);
-    int four_player_menu = createmenuitem(TXT_4_PLAYER,160,0,16,1.0f,1.0f,1.0f,1.0f);
-    setmenuitem(MO_HOTKEY,SCAN_4);
 
     if (option.sound)
       {
@@ -304,6 +305,16 @@ void optionsmenu(void){
     drawtext(TXT_JOYSTICKS,320,90,10,1.0f,1.0f,1.0f,1.0f);
     drawtext(TXT_CONNECTED": /i",320,100,10,1.0f,1.0f,1.0f,1.0f, numofjoysticks);
 
+    //drawtext("delete_preset /i",640|TEXT_END,470,10,1.0f,1.0f,1.0f,1.0f, delete_preset);
+    //drawtext("create_button /i",640|TEXT_END,460,10,1.0f,1.0f,1.0f,1.0f, create_button);
+    //drawtext("numkeyboardpresets /i",640|TEXT_END,450,10,1.0f,1.0f,1.0f,1.0f, numkeyboardpresets);
+    //drawtext("numjoystickpresets /i",640|TEXT_END,440,10,1.0f,1.0f,1.0f,1.0f, numjoystickpresets);
+    //drawtext("first_keyboard_preset_item /i",640|TEXT_END,430,10,1.0f,1.0f,1.0f,1.0f, first_keyboard_preset_item);
+    //drawtext("create_new_keyboard_preset /i",640|TEXT_END,420,10,1.0f,1.0f,1.0f,1.0f, create_new_keyboard_preset);
+    //drawtext("first_joystick_preset_item /i",640|TEXT_END,410,10,1.0f,1.0f,1.0f,1.0f, first_joystick_preset_item);
+    //drawtext("create_new_joystick_preset /i",640|TEXT_END,400,10,1.0f,1.0f,1.0f,1.0f, create_new_joystick_preset);
+    //drawtext("deletepreset /i",640|TEXT_END,390,10,1.0f,1.0f,1.0f,1.0f, deletepreset);
+
     //drawtext(TXT_PLAYER,0,80,16,1.0f,1.0f,1.0f,1.0f);
     //drawtext(TXT_KEY,320,80,16,1.0f,1.0f,1.0f,1.0f);
     //drawtext(TXT_JOYSTICK,480,80,16,1.0f,1.0f,1.0f,1.0f);
@@ -319,8 +330,8 @@ void optionsmenu(void){
     // raw mouse events should be handled first because otherwise they might override button actions
     if (mouse.lmb && !prevmouse.lmb){
         // deactivate any new preset creations
-        if (create_button != -1)
-        if (!menuitem[create_button].active){
+
+        if (!((create_button != -1 && menuitem[create_button].active) || (preset_name_input != -1 && menuitem[preset_name_input].active))){
             clicked_keyboard_preset = -1;
             clicked_joystick_preset = -1;
         }
@@ -376,20 +387,37 @@ void optionsmenu(void){
 
     for (count = first_keyboard_preset_item; count < create_new_keyboard_preset; count++){
         if (menuitem[count].active){
-            int c = count - first_keyboard_preset_item;
-            set_profile_buttons_menu(&keyboardpresets[c], 0);
+            if (deletepreset){
+                for (int preset_index = count - first_keyboard_preset_item; preset_index < numkeyboardpresets-1; preset_index++){
+                    keyboardpresets[preset_index] = keyboardpresets[preset_index+1];
+                }
+                numkeyboardpresets--;
+                deletepreset = 0;
+                menuitem[count].active = 0;
+            }
+            else{
+                set_profile_buttons_menu(&keyboardpresets[count - first_keyboard_preset_item], 0);
+            }
         }
     }
     for (count = first_joystick_preset_item; count < create_new_joystick_preset; count++){
         if (menuitem[count].active){
-            set_profile_buttons_menu(&joystickpresets[count - first_joystick_preset_item], 1);
+            if (deletepreset){
+                for (int preset_index = count - first_joystick_preset_item; preset_index < numjoystickpresets-1; preset_index++){
+                    joystickpresets[preset_index] = joystickpresets[preset_index+1];
+                }
+                numjoystickpresets--;
+                deletepreset = 0;
+                menuitem[count].active = 0;
+            }
+            else{
+                set_profile_buttons_menu(&joystickpresets[count - first_joystick_preset_item], 1);
+            }
         }
     }
 
     if (menuitem[video_options].active)
       videooptionsmenu();
-    if (menuitem[four_player_menu].active)
-      optionsmenu2();
   }
   
     clicked_keyboard_preset = -1;
@@ -655,552 +683,3 @@ void drawsliderbars(void)
 
   glEnable(GL_TEXTURE_2D);
   }
-
-void optionsmenu2(void)
-  {
-  int count,count2,count3;
-
-  count=0;
-
-  resetmenuitems();
-
-  while (!menuitem[0].active && !windowinfo.shutdown)
-    {
-    glClearColor(0.0f,0.0f,0.0f,0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    numofmenuitems=0;
-    createmenuitem(TXT_BACK,0,0,16,1.0f,1.0f,1.0f,1.0f);
-    setmenuitem(MO_HOTKEY,SCAN_ESC);
-    count=144;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-
-    count=336;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",320,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-
-    count=144;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-
-    count=336;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-    createmenuitem("        ",480,count,16,1.0f,1.0f,1.0f,1.0f);
-    count+=16;
-
-    count=112;
-    if (control[2].joysticknum==-1)
-      {
-      createmenuitem(TXT_NONE,480,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_SET,&control[2].joysticknum,0);
-      }
-    if (control[2].joysticknum==0)
-      {
-      createmenuitem(TXT_JOY1,480,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_SET,&control[2].joysticknum,1);
-      }
-    if (control[2].joysticknum==1)
-      {
-      createmenuitem(TXT_JOY2,480,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_SET,&control[2].joysticknum,2);
-      }
-    if (control[2].joysticknum==2)
-      {
-      createmenuitem(TXT_JOY3,480,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_SET,&control[2].joysticknum,3);
-      }
-    if (control[2].joysticknum==3)
-      {
-      createmenuitem(TXT_JOY4,480,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_SET,&control[2].joysticknum,-1);
-      }
-    count=304;
-    if (control[3].joysticknum==-1)
-      {
-      createmenuitem(TXT_NONE,480,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_SET,&control[3].joysticknum,0);
-      }
-    if (control[3].joysticknum==0)
-      {
-      createmenuitem(TXT_JOY1,480,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_SET,&control[3].joysticknum,1);
-      }
-    if (control[3].joysticknum==1)
-      {
-      createmenuitem(TXT_JOY2,480,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_SET,&control[3].joysticknum,2);
-      }
-    if (control[3].joysticknum==2)
-      {
-      createmenuitem(TXT_JOY3,480,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_SET,&control[3].joysticknum,3);
-      }
-    if (control[3].joysticknum==3)
-      {
-      createmenuitem(TXT_JOY4,480,count,16,1.0f,1.0f,1.0f,1.0f);
-      setmenuitem(MO_SET,&control[3].joysticknum,-1);
-      }
-
-    checksystemmessages();
-    checkkeyboard();
-    checkmouse();
-    checkjoystick();
-    checkmenuitems();
-
-    setuptextdisplay();
-
-    drawtext(TXT_PLAYER,0,80,16,1.0f,1.0f,1.0f,1.0f);
-    drawtext(TXT_KEY,320,80,16,1.0f,1.0f,1.0f,1.0f);
-    drawtext(TXT_JOYSTICK,480,80,16,1.0f,1.0f,1.0f,1.0f);
-
-    drawtext(TXT_PLAYER3,0,112,16,1.0f,1.0f,1.0f,1.0f);
-
-    count2=2;
-    count=0;
-    drawtext(TXT_MOVE_LEFT,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_LEFT]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    drawtext(TXT_MOVE_RIGHT,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_RIGHT]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    drawtext(TXT_MOVE_DOWN,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_DOWN]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    drawtext(TXT_MOVE_UP,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_UP]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    drawtext(TXT_STICK,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_STICK]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    drawtext(TXT_JUMP,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_JUMP]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    drawtext(TXT_SLIDE,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_SLIDE]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    drawtext(TXT_HEAVY,0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+1].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_HEAVY]],320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-    /*
-    drawtext("Start//Pause",0,144+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+17].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,144+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-    */
-
-    drawtext(TXT_PLAYER4,0,304,16,1.0f,1.0f,1.0f,1.0f);
-
-    count2=3;
-    count=0;
-    drawtext(TXT_MOVE_LEFT,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_LEFT]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    drawtext(TXT_MOVE_RIGHT,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_RIGHT]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    drawtext(TXT_MOVE_DOWN,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_DOWN]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    drawtext(TXT_MOVE_UP,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_UP]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_AXIS,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    drawtext(TXT_STICK,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_STICK]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    drawtext(TXT_JUMP,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_JUMP]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    drawtext(TXT_SLIDE,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_SLIDE]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    drawtext(TXT_HEAVY,0,336+count*16,16,0.75f,0.75f,0.75f,1.0f);
-    if (!menuitem[count+9].active)
-      drawtext(keyboardlabel[control[count2].key[KEYALIAS_HEAVY]],320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    else
-      drawtext("?",320,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    if (!menuitem[count+26].active)
-      {
-      if (control[count2].button[count]!=-1)
-        drawtext(TXT_BUTTON" /i",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f,control[count2].button[count]+1);
-      else
-        drawtext(TXT_NONE,480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-      }
-    else
-      drawtext("?",480,336+count*16,16,1.0f,1.0f,1.0f,1.0f);
-    count++;
-
-    if (control[2].joysticknum!=-1)
-      drawtext(joystick[control[2].joysticknum].name,480,128,10,0.5f,0.5f,0.5f,1.0f);
-    if (control[3].joysticknum!=-1)
-      drawtext(joystick[control[3].joysticknum].name,480,320,10,0.5f,0.5f,0.5f,1.0f);
-
-    drawmenuitems();
-
-    drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
-
-    SDL_GL_SwapWindow(globalwindow);
-
-    for (count=0;count<KEYALIAS_LENGTH;count++)
-    if (menuitem[count+1].active)
-      {
-      for (count2=1;count2<SDL_NUM_SCANCODES;count2++)
-      if (keyboardlabel[count2][0]!=0)
-      if (keyboard[count2] && !prevkeyboard[count2])
-        {
-        control[2].key[count]=count2;
-
-        for (count3=0;count3<KEYALIAS_LENGTH;count3++)
-        if (count3!=count)
-        if (control[2].key[count3]==count2)
-          control[2].key[count3]=0;
-
-        for (count3=0;count3<8;count3++)
-        if (count3!=count)
-        if (control[3].key[count3]==count2)
-          control[3].key[count3]=0;
-
-        menuitem[count+1].active=0;
-        }
-      if (keyboard[SCAN_DELETE] && !prevkeyboard[SCAN_DELETE])
-        {
-        control[2].key[count]=0;
-        menuitem[count+1].active=0;
-        }
-      }
-    for (count=0;count<8;count++)
-    if (menuitem[count+9].active)
-      {
-      for (count2=1;count2<SDL_NUM_SCANCODES;count2++)
-      if (keyboardlabel[count2][0]!=0)
-      if (keyboard[count2] && !prevkeyboard[count2])
-        {
-        control[3].key[count]=count2;
-
-        for (count3=0;count3<8;count3++)
-        if (count3!=count)
-        if (control[2].key[count3]==count2)
-          control[2].key[count3]=0;
-
-        for (count3=0;count3<8;count3++)
-        if (count3!=count)
-        if (control[3].key[count3]==count2)
-          control[3].key[count3]=0;
-
-        menuitem[count+9].active=0;
-        }
-      if (keyboard[SCAN_DELETE] && !prevkeyboard[SCAN_DELETE])
-        {
-        control[3].key[count]=0;
-        menuitem[count+9].active=0;
-        }
-      }
-    if (control[2].joysticknum!=-1)
-    for (count=0;count<9;count++)
-    if (menuitem[count+17].active)
-      {
-      for (count2=0;count2<joystick[control[2].joysticknum].numofbuttons;count2++)
-      if (joystick[control[2].joysticknum].button[count2] && !prevjoystick[control[2].joysticknum].button[count2])
-        {
-        control[2].button[count]=count2;
-
-        if (control[2].joysticknum!=-1)
-        for (count3=0;count3<joystick[control[2].joysticknum].numofbuttons;count3++)
-        if (count3!=count)
-        if (control[2].button[count3]==count2)
-          control[2].button[count3]=-1;
-
-        menuitem[count+17].active=0;
-        }
-      if (keyboard[SCAN_DELETE] && !prevkeyboard[SCAN_DELETE])
-        {
-        control[2].button[count]=-1;
-        menuitem[count+17].active=0;
-        }
-      }
-    if (control[3].joysticknum!=-1)
-    for (count=0;count<8;count++)
-    if (menuitem[count+26].active)
-      {
-      for (count2=0;count2<joystick[control[3].joysticknum].numofbuttons;count2++)
-      if (joystick[control[3].joysticknum].button[count2] && !prevjoystick[control[3].joysticknum].button[count2])
-        {
-        control[3].button[count]=count2;
-
-        if (control[3].joysticknum!=-1)
-        for (count3=0;count3<8;count3++)
-        if (count3!=count)
-        if (control[3].button[count3]==count2)
-          control[3].button[count3]=-1;
-
-        menuitem[count+26].active=0;
-        }
-      if (keyboard[SCAN_DELETE] && !prevkeyboard[SCAN_DELETE])
-        {
-        control[3].button[count]=-1;
-        menuitem[count+26].active=0;
-        }
-      }
-    }
-
-  resetmenuitems();
-  }
-

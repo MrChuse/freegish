@@ -364,6 +364,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define TXT_PLAYER											"Player"
 #define TXT_KEY												"Key"
 #define TXT_NEW_PRESET										"New preset"
+#define TXT_DELETE_PRESET									"Delete preset"
 #define TXT_KEYBOARD_PRESETS								"Keyboard presets"
 #define TXT_JOYSTICK_PRESETS								"Joystick presets"
 #define TXT_JOYSTICKS         							    "Joysticks"
