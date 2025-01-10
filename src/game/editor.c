@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../sdl/sdl.h"
 
 #include "../game/editor.h"
+#include "../game/debug.h"
 #include "../game/block.h"
 #include "../game/english.h"
 #include "../game/game.h"
@@ -264,6 +265,16 @@ void editlevel(void)
       drawtext(TXT_WAYBACKGROUND,0,384,16,1.0f,1.0f,1.0f,1.0f);
     drawtext(TXT_TILESET":/i",0,368,16,1.0f,1.0f,1.0f,1.0f,level.tileset);
     drawtext(TXT_TILE":/i",0,400,16,1.0f,1.0f,1.0f,1.0f,editor.blocknum);
+
+    if (debug_grid_blocknums)
+    for (count=view.position[1]-view.zoomy;count<=view.position[1]+view.zoomy;count++)
+    if (count>=0 && count<256)
+    for (count2=view.position[0]-view.zoomx;count2<=view.position[0]+view.zoomx;count2++)
+    if (count2>=0 && count2<256){
+        int blocknum=level.grid[count][count2];
+        world_to_screen((float)count2+0.5f, (float)count-0.5f, &vec[0], &vec[1]);
+        drawtext("/i",vec[0],vec[1],8,1.0f,1.0f,1.0f,1.0f, blocknum);
+    }
 
     drawmenuitems();
 

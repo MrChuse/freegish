@@ -64,6 +64,7 @@ void gamelogic(void)
       for (int i = 0; i < game.numofplayers; i++)
           addvectors(midpoint, midpoint, object[i].position);
       scalevector(midpoint, midpoint, 1.0f / game.numofplayers);
+    // camera movement with small static region
     if (view.position[0]< midpoint[0]-2.0f)
       view.position[0]= midpoint[0]-2.0f;
     if (view.position[0]> midpoint[0]+2.0f)
@@ -667,14 +668,11 @@ void gamedisplay(void)
       }
 
     if (debug_character_positions) {
-        drawtext("/f", 0, 0, 0, red, green, blue, 1.0f, object[0].position[0]);
-        drawtextbitmap(64, 12 + 16, 24, 24);
-        drawtext("/f", 0, 0, 0, red, green, blue, 1.0f, object[0].position[1]);
-        drawtextbitmap(64, 12 + 16 * 2, 24, 24);
-        drawtext("/f", 0, 0, 0, red, green, blue, 1.0f, object[1].position[0]);
-        drawtextbitmap(64, 12 + 16 * 3, 24, 24);
-        drawtext("/f", 0, 0, 0, red, green, blue, 1.0f, object[1].position[1]);
-        drawtextbitmap(64, 12 + 16 * 4, 24, 24);
+        float vec[2];
+        for (int player = 0; player < game.numofplayers; player++) {
+            world_to_screen(object[player].position[0], object[player].position[1], &vec[0], &vec[1]);
+            drawtext("/i /i", (int)vec[0],(int)vec[1], 10, 1.0f, 1.0f, 1.0f, 1.0f, (int)object[player].position[0], (int)object[player].position[1]);
+        }
 
         float midpoint[3];
         float sub_result[3];
@@ -689,14 +687,17 @@ void gamedisplay(void)
             subtractvectors(sub_result, midpoint, object[i].position);
             distance_to_midpoint += vectorlength(sub_result);
         }
-
-        drawtext("/f", 0, 0, 0, red, green, blue, 1.0f, midpoint[0]);
-        drawtextbitmap(355, 12 + 16 * 1, 24, 24);
-        drawtext("/f", 0, 0, 0, red, green, blue, 1.0f, midpoint[1]);
-        drawtextbitmap(355, 12 + 16 * 2, 24, 24);
-        drawtext("/f", 0, 0, 0, red, green, blue, 1.0f, distance_to_midpoint);
-        drawtextbitmap(355, 12 + 16 * 3, 24, 24);
+        world_to_screen(midpoint[0], midpoint[1], &vec[0], &vec[1]);
+        drawtext("mid/i /i /i", (int)vec[0],(int)vec[1], 10, 1.0f, 1.0f, 1.0f, 1.0f, (int)midpoint[0], (int)midpoint[1], (int)distance_to_midpoint);
     }
+    if (debug_character_positions){
+        float vec[2];
+        for (count = 0; count < numofobjects; count++){
+            world_to_screen(object[count].position[0], object[count].position[1], &vec[0], &vec[1]);
+            drawtext("/i", (int)vec[0],(int)vec[1]+10, 10, 1.0f, 1.0f, 1.0f, 1.0f, count);
+        }
+    }
+
     glColor3f(1.0f,1.0f,1.0f);
 
     //drawtext("/i",(40|TEXT_CENTER),24,16,1.0f,1.0f,1.0f,1.0f,object[0].hitpoints/10);

@@ -154,6 +154,19 @@ void editlevelobjects(void)
       drawtext(TXT_LINK":/i",0,INFO_Y+OFFSET_Y*5,16,1.0f,1.0f,1.0f,1.0f,level.object[editor.objectnum].link);
     }
 
+    // draw mouse pos
+    screen_to_world(mouse.x, mouse.y, &vec[0], &vec[1]);
+    x = (int)vec[0];
+    y = (int)vec[1];
+    drawtext("/i /i", mouse.x, mouse.y, 10, 1.0f,1.0f,1.0f,1.0f, x, y);
+
+    for (count = 0; count < level.numofobjects; count++){
+        world_to_screen(level.object[count].position[0], level.object[count].position[1], &vec[0], &vec[1]);
+        x = (int)vec[0];
+        y = (int)vec[1];
+        drawtext("/i", x, y+10, 10, 1.0f,1.0f,1.0f,1.0f, count);
+    }
+
     drawmenuitems();
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);

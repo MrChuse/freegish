@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../game/render.h"
 #include "../game/block.h"
 #include "../game/editor.h"
+#include "../game/debug.h"
 #include "../game/game.h"
 #include "../game/level.h"
 #include "../game/lighting.h"
@@ -408,6 +409,29 @@ void renderlevel(void)
     }
 
   glDisable(GL_STENCIL_TEST);
+
+  if (debug_character_positions){
+        float vec[3];
+        glDisable(GL_TEXTURE_2D);
+        for (count = 0; count < numofobjects; count++){
+            if (object[count].link != -1) {
+                glBegin(GL_LINES);
+                glColor4f(1.0f,0.0f,0.0f,1.0f);
+
+                vec[0] = object[count].position[0];
+                vec[1] = object[count].position[1];
+                vec[2] = 0;
+                glVertex3fv(vec);
+                vec[0] = object[object[count].link].position[0];
+                vec[1] = object[object[count].link].position[1];
+                vec[2] = 0;
+                glVertex3fv(vec);
+
+                glEnd();
+            }
+        }
+        glEnable(GL_TEXTURE_2D);
+    }
 
   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
   }
