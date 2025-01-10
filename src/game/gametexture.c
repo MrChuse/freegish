@@ -127,6 +127,13 @@ void edittextures(void)
 			  cleanFilename[filenameLength-4] = '\0';
 		  else
 			  cleanFilename[filenameLength] = '\0';
+          char *p = cleanFilename;
+          while(*p){ // use backslashes because drawtext freaks out /s and other formatting literals
+              if (*p == '/') *p = '\\';
+              p++;
+          }
+
+
 		  
 		  
 		  drawtext(cleanFilename,
