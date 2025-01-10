@@ -301,8 +301,6 @@ void mainmenu(void)
 
     if (keyboard[SCAN_T] && !prevkeyboard[SCAN_T])
       game.turbomode^=1;
-    if (keyboard[SCAN_Y] && !prevkeyboard[SCAN_Y])
-      game.numofplayers = 1 + game.numofplayers % 4; // from 1 to 4
 
     updateogg();
     checkmusic();
@@ -317,9 +315,6 @@ void mainmenu(void)
     if (game.turbomode)
       drawtext(TXT_TURBO_EDITION,(640|TEXT_END),470,10,1.0f,1.0f,1.0f,1.0f);
 
-    char restext[64];
-    sprintf(restext, "%s %i", TXT_NUMOFPLAYERS, game.numofplayers);
-    drawtext(restext,(640|TEXT_END),470-16,10,1.0f,1.0f,1.0f,1.0f);
     drawtext("Version 1.53",0,470,10,1.0f,1.0f,1.0f,1.0f);
 
     drawtext(TXT_COPYRIGHT,(320|TEXT_CENTER),470,10,0.75f,0.75f,0.75f,1.0f);
@@ -359,6 +354,11 @@ void mainmenu(void)
       //checkmusic();
 
       prevjoymenunum=2;
+      int numplayers = 0;
+      int controllers[4] = {-1, -1, -1, -1};
+      int presets[4] = {-1, -1, -1, -1};
+      setup_presets_to_players(&numplayers, controllers, presets, 2);
+      bind_presets_to_controls(numplayers, controllers, presets);
       versusmenu();
       joymenunum=prevjoymenunum;
       }
@@ -409,6 +409,153 @@ void displaybackground(int texturenum)
   drawbackground(texturenum+11,768,512,256,256,800,600);
   }
 
+void setup_presets_to_players(int* numplayers_out, int* controllers, int* presets, int minplayers){
+    resetmenuitems();
+
+    // controllers is a 4-length int array where
+    // 0 is kb
+    // 1-4 is joystick
+
+    // int teams[4] = {0, 1, 2, 3};
+
+    int numplayers = *numplayers_out;
+
+    joymenunum=1;
+
+    while (!menuitem[0].active && !windowinfo.shutdown)
+        {
+        glClearColor(0.0f,0.0f,0.0f,0.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        numofmenuitems=0;
+
+        int continue_button = createmenuitem(TXT_CONTINUE,640|TEXT_END,0,16,1.0f,1.0f,1.0f,1.0f);
+        int left_arrows[4] = {-1, -1, -1, -1};
+        int right_arrows[4] = {-1, -1, -1, -1};
+
+        /* // need this if you want to have same keys for different players. Irrelevant for now.
+        for (int player_index = 0; player_index < numplayers; player_index++){
+            left_arrows[player_index] = createmenuitem(TXT_LEFT_ARROW, (80 - 80 + player_index * 160), 360+16+10, 10,1.0f,1.0f,1.0f,1.0f);
+            left_arrows[player_index] = createmenuitem(TXT_RIGHT_ARROW, (80 + 80 + player_index * 160)|TEXT_END, 360+16+10, 10,1.0f,1.0f,1.0f,1.0f);
+        }
+        */
+
+        checksystemmessages();
+        checkkeyboard();
+        checkmouse();
+        checkjoystick();
+        checkmenuitems();
+
+        updateogg();
+        checkmusic();
+        game.songnum=8;
+        soundsimulation(view.position,view.orientation);
+
+        setuptextdisplay();
+
+        drawtext(TXT_PRESS_JUMP_BUTTON,(320|TEXT_CENTER),240,16,1.0f,1.0f,1.0f,1.0f);
+        if (numplayers > 0){
+            drawtext(TXT_PRESS_HEAVY_BUTTON,(320|TEXT_CENTER),240+16,16,1.0f,1.0f,1.0f,1.0f);
+        }
+        for (int player_index = 0; player_index < numplayers; player_index++){
+            if (controllers[player_index] == 0){
+                drawtext(TXT_KEYBOARD, (80 + player_index * 160)|TEXT_CENTER, 360, 16,1.0f,1.0f,1.0f,1.0f);
+
+                drawtext(keyboardpresets[presets[player_index]].name, (80 + player_index * 160)|TEXT_CENTER, 360+16+10, 10,1.0f,1.0f,1.0f,1.0f);
+            }
+            else{
+                drawtext(TXT_JOYSTICK, (80 + player_index * 160)|TEXT_CENTER, 360, 16,1.0f,1.0f,1.0f,1.0f);
+                drawtext(joystick[controllers[player_index]-1].name, (80 + player_index * 160)|TEXT_CENTER, 360+16, 10,0.5f,0.5f,0.5f,1.0f);
+                drawtext(joystickpresets[presets[player_index]].name, (80 + player_index * 160)|TEXT_CENTER, 360+16+10, 10, 1.0f,1.0f,1.0f,1.0f);
+            }
+        }
+        if (numplayers < minplayers) {
+            drawtext(TXT_TOO_FEW_PlAYERS,(640|TEXT_END),16,10,1.0f,1.0f,1.0f,1.0f, minplayers);
+        }
+
+        glColor4f(1.0f,1.0f,1.0f,1.0f);
+        displaybackground(600);
+
+        drawmenuitems();
+
+        drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
+
+        SDL_GL_SwapWindow(globalwindow);
+
+        if (numplayers < 4){
+            // joining
+            for (int kbpreset=0;kbpreset<numkeyboardpresets;kbpreset++){
+                int jump_button = keyboardpresets[kbpreset].key[KEYALIAS_JUMP];
+                if (keyboard[jump_button] && !prevkeyboard[jump_button]){
+                    controllers[numplayers] = 0;
+                    presets[numplayers] = kbpreset;
+                    numplayers++;
+                    break;
+                }
+            }
+            for (int jpreset=0; jpreset<numjoystickpresets; jpreset++){
+                int joystick_index = joystickpresets[jpreset].joysticknum;
+                int jump_button = joystickpresets[jpreset].button[KEYALIAS_JUMP];
+                if (joystick[joystick_index].button[jump_button] && !prevjoystick[joystick_index].button[jump_button]){
+                    controllers[numplayers] = joystick_index+1;
+                    presets[numplayers] = jpreset;
+                    numplayers++;
+                    break;
+                }
+            }
+            // leaving
+            for (int player_index = numplayers-1; player_index >= 0; player_index--){
+                if (controllers[player_index] == 0){
+                    int heavy_button = keyboardpresets[presets[player_index]].key[KEYALIAS_HEAVY];
+                    if (keyboard[heavy_button] && !prevkeyboard[heavy_button]){
+                        // found, exclude them
+                        for (; player_index < numplayers-1; player_index++){
+                            controllers[player_index] = controllers[player_index+1];
+                            presets[player_index] = presets[player_index+1];
+                        }
+                        numplayers--;
+                        break;
+                    }
+                }
+                else {
+                    int joystick_index = joystickpresets[controllers[player_index]-1].joysticknum;
+                    int heavy_button = joystickpresets[controllers[player_index]-1].button[KEYALIAS_HEAVY];
+                    if (joystick[joystick_index].button[heavy_button] && !prevjoystick[joystick_index].button[heavy_button]){
+                        // found, exclude them
+                        for (; player_index < numplayers-1; player_index++){
+                            controllers[player_index] = controllers[player_index+1];
+                            presets[player_index] = presets[player_index+1];
+                        }
+                        numplayers--;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (menuitem[continue_button].active){
+            if (numplayers < minplayers) {
+                menuitem[continue_button].active = 0;
+                continue;
+            }
+            // save to out variables
+            *numplayers_out = numplayers;
+            break;
+        }
+    }
+    resetmenuitems();
+}
+void bind_presets_to_controls(int numplayers, int* controllers, int* presets){
+    // setup controls
+    for (int player_index = 0; player_index < numplayers; player_index++){
+        if (controllers[player_index] == 0){
+            control[player_index] = keyboardpresets[presets[player_index]];
+        }
+        else{
+            control[player_index] = joystickpresets[presets[player_index]];
+        }
+    }
+}
 void versusmenu(void)
   {
   int count;
