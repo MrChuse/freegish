@@ -96,6 +96,20 @@ void get_mouse_coords(float *x, float *y){
     *y=view.position[1]+(float)(240-mouse.y)/32.0f * view.zoom / 10.f;
 }
 
+void screen_to_world(float x, float y, float *x_out, float *y_out){
+    assert(x_out);
+    assert(y_out);
+    *x_out=view.position[0]+(float)(x-320)/32.0f * view.zoom / 10.f;
+    *y_out=view.position[1]+(float)(240-y)/32.0f * view.zoom / 10.f;
+}
+
+void world_to_screen(float x, float y, float *x_out, float *y_out){
+    assert(x_out);
+    assert(y_out);
+    *x_out = (x - view.position[0]) * 320.f / view.zoom + 320.f;
+    *y_out = -((y - view.position[1]) * 320.f / view.zoom - 240.f);
+}
+
 void gameloop(void)
   {
   int count,count2;

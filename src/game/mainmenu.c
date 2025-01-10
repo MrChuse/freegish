@@ -453,6 +453,9 @@ void setup_presets_to_players(int* numplayers_out, int* controllers, int* preset
 
         setuptextdisplay();
 
+        glColor4f(1.0f,1.0f,1.0f,1.0f);
+        //displaybackground(600);
+
         drawtext(TXT_PRESS_JUMP_BUTTON,(320|TEXT_CENTER),240,16,1.0f,1.0f,1.0f,1.0f);
         if (numplayers > 0){
             drawtext(TXT_PRESS_HEAVY_BUTTON,(320|TEXT_CENTER),240+16,16,1.0f,1.0f,1.0f,1.0f);
@@ -472,9 +475,6 @@ void setup_presets_to_players(int* numplayers_out, int* controllers, int* preset
         if (numplayers < minplayers) {
             drawtext(TXT_TOO_FEW_PlAYERS,(640|TEXT_END),16,10,1.0f,1.0f,1.0f,1.0f, minplayers);
         }
-
-        glColor4f(1.0f,1.0f,1.0f,1.0f);
-        displaybackground(600);
 
         drawmenuitems();
 

@@ -76,7 +76,7 @@ void setuplevel(void)
         if (animation[11].loaded==0)
           animation[11].loaded=2;
       }
-  loadanimations();
+  loadanimations(); // why on every level loading?
 
   for (count=0;count<level.numofobjects;count++)
     {

@@ -246,67 +246,63 @@ void savelevel(char *filename)
       fwrite2(&level.rope[count].obj2part,4,1,fp);
       }
 
-    for (count=1;count<251;count++)
-      {
-      if (textureused[count])
-        {
-          if (debug_level_saveload) printf("Saving %i as ", count);
+    for (int count=1;count<251;count++){
+        if (textureused[count]){
+            if (debug_level_saveload) printf("Saving %i as ", count);
 
-          if (texture[count].filename[0] == 0){
-              // look for the texture in some folders
-              if (numofloadedtextures == 0) // didn't load textures yet
-                  numofloadedtextures = load_all_textures();
-              look_for_texture_in_folders(count, numofloadedtextures);
-          }
+            if (texture[count].filename[0] == 0){
+                // look for the texture in some folders
+                if (numofloadedtextures == 0) // didn't load textures yet
+                    numofloadedtextures = load_all_textures();
+                look_for_texture_in_folders(count, numofloadedtextures);
+            }
 
-		  if (texture[count].filename[0] != 0)
-		  {
-		  	int filenameLength;
-		  	if (debug_level_saveload) printf("\"%s\"...\n", texture[count].filename);
-		  	filenameLength = -strlen(texture[count].filename); // save a negative number to indicate a texture from a file
-		  	//length = -1;
-		  	fwrite2(&filenameLength,4,1,fp);
-		  	filenameLength = abs(filenameLength);
-		  	fwrite2(texture[count].filename,1,filenameLength,fp);
-		  	fflush(fp);
-		  }
-		  else
-		  {
-		  	if (debug_level_saveload) printf("blob: ");
-		  	fwrite2(&texture[count].sizex,4,1,fp);
-		  	if (texture[count].sizex == 0)
-		  	{
-		  		if (debug_level_saveload) printf("empty\n");
-		  	}
-		  	else
-		  	{
-		  		if (debug_level_saveload) printf("%ix%i\n", texture[count].sizex, texture[count].sizey);
-		  		fwrite2(&texture[count].sizey,4,1,fp);
-		  		fwrite2(&texture[count].magfilter,4,1,fp);
-		  		fwrite2(&texture[count].minfilter,4,1,fp);
-		  		fwrite2(texture[count].rgba[0],4,texture[count].sizex*texture[count].sizey,fp);
-		  	}
-	      }
+		    if (texture[count].filename[0] != 0)
+		    {
+		    	int filenameLength;
+		    	if (debug_level_saveload) printf("\"%s\"...\n", texture[count].filename);
+		    	filenameLength = -strlen(texture[count].filename); // save a negative number to indicate a texture from a file
+		    	//length = -1;
+		    	fwrite2(&filenameLength,4,1,fp);
+		    	filenameLength = abs(filenameLength);
+		    	fwrite2(texture[count].filename,1,filenameLength,fp);
+		    	fflush(fp);
+		    }
+		    else
+		    {
+		    	if (debug_level_saveload) printf("blob: ");
+		    	fwrite2(&texture[count].sizex,4,1,fp);
+		    	if (texture[count].sizex == 0)
+		    	{
+		    		if (debug_level_saveload) printf("empty\n");
+		    	}
+		    	else
+		    	{
+		    		if (debug_level_saveload) printf("%ix%i\n", texture[count].sizex, texture[count].sizey);
+		    		fwrite2(&texture[count].sizey,4,1,fp);
+		    		fwrite2(&texture[count].magfilter,4,1,fp);
+		    		fwrite2(&texture[count].minfilter,4,1,fp);
+		    		fwrite2(texture[count].rgba[0],4,texture[count].sizex*texture[count].sizey,fp);
+		    	}
+	        }
         }
-      else
-        {
-        count2=0;
-        fwrite2(&count2,4,1,fp);
+        else{
+            count2=0;
+            fwrite2(&count2,4,1,fp);
         }
 
-      fwrite2(&block[count].numoflines,4,1,fp);
-      for (count2=0;count2<block[count].numoflines;count2++)
-        fwrite2(block[count].line[count2],4,8,fp);
-      fwrite2(&block[count].friction,4,1,fp);
-      fwrite2(&block[count].breakpoint,4,1,fp);
-      fwrite2(&block[count].middamage,4,1,fp);
-      fwrite2(&block[count].foredamage,4,1,fp);
-      fwrite2(&block[count].density,4,1,fp);
-      fwrite2(&block[count].drag,4,1,fp);
-      fwrite2(&block[count].animation,4,1,fp);
-      fwrite2(&block[count].animationspeed,4,1,fp);
-      }
-
+        fwrite2(&block[count].numoflines,4,1,fp);
+        for (count2=0;count2<block[count].numoflines;count2++)
+          fwrite2(block[count].line[count2],4,8,fp);
+        fwrite2(&block[count].friction,4,1,fp);
+        fwrite2(&block[count].breakpoint,4,1,fp);
+        fwrite2(&block[count].middamage,4,1,fp);
+        fwrite2(&block[count].foredamage,4,1,fp);
+        fwrite2(&block[count].density,4,1,fp);
+        fwrite2(&block[count].drag,4,1,fp);
+        fwrite2(&block[count].animation,4,1,fp);
+        fwrite2(&block[count].animationspeed,4,1,fp);
+    }
     fclose(fp);
     }
   }
@@ -407,6 +403,28 @@ void loadlevel(char *filename)
           }
         if (texture[count].sizex!=0)
           {
+            // these are set
+            // int sizex;
+            // int sizey;
+            // int magfilter;
+            // int minfilter;
+            // unsigned int *rgba[16];	// XXX: use uint32_t
+            // char filename[256];
+            // int mipmaplevels;
+            // int format;
+            // int alphamap;
+            // int normalmap;
+            // int glossmap;
+            // int wraps;
+            // int wrapt;
+            //
+            // these are not set
+            // int isalpha;
+            // GLuint glname;
+            // int glnamenormal;
+            // unsigned int *normal[16];	// XXX: use uint32_t
+            // int glnamegloss;
+            // unsigned char *gloss[16];
           fread2(&texture[count].sizey,4,1,fp);
           fread2(&texture[count].magfilter,4,1,fp);
           fread2(&texture[count].minfilter,4,1,fp);
@@ -417,6 +435,8 @@ void loadlevel(char *filename)
           decryptdata(x,4*texture[count].sizex*texture[count].sizey/4);
           memcpy(texture[count].rgba[0],cryptdata,4*texture[count].sizex*texture[count].sizey);
 
+          memset(texture[count].filename, 0, sizeof(texture[count].filename));
+
           texture[count].mipmaplevels=1;
           texture[count].format=GL_RGBA;
           texture[count].alphamap=0;
@@ -424,7 +444,7 @@ void loadlevel(char *filename)
           texture[count].glossmap=0;
           texture[count].wraps=GL_CLAMP_TO_EDGE;
           texture[count].wrapt=GL_CLAMP_TO_EDGE;
-          texture[count].magfilter=GL_LINEAR;
+          texture[count].magfilter=GL_LINEAR; // why override?
           texture[count].minfilter=GL_LINEAR;
 
           if ((texture[count].sizex&(texture[count].sizex-1))==0)
@@ -574,7 +594,7 @@ void loadlevel(char *filename)
         fread2(&block[count].animationspeed,4,1,fp);
         }
       }
-	  if (version==11)
+	if (version==11)
 	  {
 		  strcpy(editor.filename,filename);
 

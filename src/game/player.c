@@ -396,7 +396,16 @@ void playerstartmenu(void)
     }
     else
         createmenuitemempty();
+    createmenuitem(TXT_CUSTOM_LEVELS,48,count,16,1.0f,1.0f,1.0f,1.0f);
+    setmenuitem(MO_HOTKEY,SCAN_U);
+    count+=16;
     int change_players = createmenuitem(TXT_CHANGE_PLAYERS,480|TEXT_CENTER,352+32,16,1.0f,1.0f,1.0f,1.0f);
+    int next_level = -1;
+    int prev_level = -1;
+    if (debug_next_level){
+        next_level = createmenuitem("Next level",480|TEXT_CENTER,352+64,16,1.0f,1.0f,1.0f,1.0f);
+        prev_level = createmenuitem("Prev level",480|TEXT_CENTER,352+80,16,1.0f,1.0f,1.0f,1.0f);
+    }
 
     checksystemmessages();
     checkkeyboard();
@@ -419,10 +428,13 @@ void playerstartmenu(void)
     if (count3==0)
       count3=1;
 
-    if (debug_unlocks)
-    for (count = 0; count < 16; count++)
-      drawtext("/i",432+count/8*16,352+16*count%8,16,1.0f,1.0f,1.0f,1.0f, player[playernum].unlock[count]);
-
+    if (debug_unlocks){
+        count=0;
+        drawtext("single_level /i",640|TEXT_END,0,16,1.0f,1.0f,1.0f,1.0f, single_level);
+        count+=16;
+        for (int count4 = 0; count4 < 16; count4++)
+          drawtext("/i",600+count4/8*16,count + 16*(count4%8),16,1.0f,1.0f,1.0f,1.0f, player[playernum].unlock[count4]);
+    }
     drawtext(TXT_NUMOFPLAYERS" /i",460|TEXT_CENTER,352,10,1.0f,1.0f,1.0f,1.0f, player[playernum].numplayers);
 
     if (!player[playernum].gamepassed)
@@ -618,13 +630,24 @@ void playerstartmenu(void)
       singlelevelmenu();
       }
 
-    if (single_level != -1)
-    if (menuitem[single_level].active)
+    if (menuitem[7].active)
       {
+      bind_presets_to_controls(player[playernum].numplayers, player[playernum].is_joystick, player[playernum].presets);
+      game.numofplayers = player[playernum].numplayers;
       custommenu();
       }
     if (menuitem[change_players].active){
         setup_presets_to_players(&player[playernum].numplayers, player[playernum].is_joystick, player[playernum].presets, 1);
+    }
+    if (next_level != -1)
+    if (menuitem[next_level].active){
+        player[playernum].levelnum++;
+        menuitem[next_level].active = 0;
+    }
+    if (prev_level != -1)
+    if (menuitem[prev_level].active){
+        player[playernum].levelnum--;
+        menuitem[prev_level].active = 0;
     }
   }
 
