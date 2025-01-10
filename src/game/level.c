@@ -310,16 +310,16 @@ void savelevel(char *filename)
 void loadlevel(char *filename)
   {
   int count,count2;
-  int changeddir;
   int version = -1;
   unsigned int x/*,y*/;
   FILE *fp;
 
   x=0x17AF2E03;
 
-  changeddir=chdir("level");
+  char filename2[64];
+  sprintf(filename2, "level/%s", filename);
 
-  if ((fp=fopen(filename,"rb"))!=NULL)
+  if ((fp=fopen(filename2,"rb"))!=NULL)
     {
     fread2(&version,4,1,fp);
 
@@ -355,8 +355,6 @@ void loadlevel(char *filename)
       if (level.numofobjects<0 || level.numofobjects>=256)
         {
         fclose(fp);
-        if (changeddir==0)
-          chdir("..");
         return;
         }
       for (count=0;count<level.numofobjects;count++)
@@ -378,8 +376,6 @@ void loadlevel(char *filename)
       if (level.numofropes<0 || level.numofropes>=1024)
         {
         fclose(fp);
-        if (changeddir==0)
-          chdir("..");
         return;
         }
       for (count=0;count<level.numofropes;count++)
@@ -397,8 +393,6 @@ void loadlevel(char *filename)
         if (texture[count].sizex<0 || texture[count].sizex>=1024)
           {
           fclose(fp);
-          if (changeddir==0)
-            chdir("..");
           return;
           }
         if (texture[count].sizex!=0)
@@ -456,8 +450,6 @@ void loadlevel(char *filename)
         if (block[count].numoflines<0 || block[count].numoflines>=64)
           {
           fclose(fp);
-          if (changeddir==0)
-            chdir("..");
           return;
           }
         for (count2=0;count2<block[count].numoflines;count2++)
@@ -495,8 +487,6 @@ void loadlevel(char *filename)
       if (level.numofobjects<0 || level.numofobjects>=256)
         {
         fclose(fp);
-        if (changeddir==0)
-          chdir("..");
         return;
         }
       for (count=0;count<level.numofobjects;count++)
@@ -518,8 +508,6 @@ void loadlevel(char *filename)
       if (level.numofropes<0 || level.numofropes>=1024)
         {
         fclose(fp);
-        if (changeddir==0)
-          chdir("..");
         return;
         }
       for (count=0;count<level.numofropes;count++)
@@ -537,8 +525,6 @@ void loadlevel(char *filename)
         if (texture[count].sizex<0 || texture[count].sizex>=1024)
           {
           fclose(fp);
-          if (changeddir==0)
-            chdir("..");
           return;
           }
         if (texture[count].sizex!=0)
@@ -578,8 +564,6 @@ void loadlevel(char *filename)
         if (block[count].numoflines<0 || block[count].numoflines>=64)
           {
           fclose(fp);
-          if (changeddir==0)
-            chdir("..");
           return;
           }
         for (count2=0;count2<block[count].numoflines;count2++)
@@ -617,8 +601,6 @@ void loadlevel(char *filename)
 		  if (level.numofobjects<0 || level.numofobjects>=256)
 		  {
 			  fclose(fp);
-			  if (changeddir==0)
-				  chdir("..");
 			  return;
 		  }
 		  for (count=0;count<level.numofobjects;count++)
@@ -640,8 +622,6 @@ void loadlevel(char *filename)
 		  if (level.numofropes<0 || level.numofropes>=1024)
 		  {
 			  fclose(fp);
-			  if (changeddir==0)
-				  chdir("..");
 			  return;
 		  }
 		  for (count=0;count<level.numofropes;count++)
@@ -665,11 +645,7 @@ void loadlevel(char *filename)
 				  fread2(filename, 1, filenameLength, fp);
 
 				  if (debug_level_saveload) printf("\"%s\"...\n", filename);
-				  if (changeddir==0)
-					chdir("..");
 				  loadtexture(count, filename,0,GL_CLAMP_TO_EDGE,GL_CLAMP_TO_EDGE,GL_LINEAR,GL_LINEAR);
-				  if (changeddir==0)
-					changeddir = chdir("level");
 			  }
 			  else
 			  {
@@ -679,8 +655,6 @@ void loadlevel(char *filename)
 				  {
 					  if (debug_level_saveload) printf("Invalid blob!\n");
 					  fclose(fp);
-					  if (changeddir==0)
-						  chdir("..");
 					  return;
 				  }
 				  if (texture[count].sizex==0)
@@ -722,8 +696,6 @@ void loadlevel(char *filename)
 			  if (block[count].numoflines<0 || block[count].numoflines>=64)
 			  {
 				  fclose(fp);
-				  if (changeddir==0)
-					  chdir("..");
 				  return;
 			  }
 			  for (count2=0;count2<block[count].numoflines;count2++)
@@ -740,9 +712,6 @@ void loadlevel(char *filename)
 	  }
 
     fclose(fp);
-
-	if (changeddir==0)
-		chdir("..");
 
 	if (version<7)
 		loadleveltextures();
