@@ -1,0 +1,26 @@
+Whole campaign.
+I think ends of levels should all have a tunnel slide at the end. Imo it plays very nicely with gish being a goo, having to slide in the sewers etc.
+
+So, there are five worlds and 34 levels in total.
+
+Worlds contemplations.
+
+They should obviously be harder and harder as the game progresses.
+
+New worlds should bring in entire concepts like ropes, moving blocks etc.
+
+World 1. The player is new, so easy levels, no traps, maybe obviously placed secrets. Sliding blocks. Mobs should be present because of the boss fight at the end.
+World 2. Introducing some parkour, maybe puzzles, some hazards like spikes and water. Throwing blocks. No lava yet. (Just like in the original game)
+World 3. Harder parkour, maybe with cyclic timings. Lava. Traps. 
+World 4. Long levels with hard parkour. Hoards of enemies.
+World 5. Vertical movement. Gimmicky levels, should be especially clever.
+
+
+World 1.
+Level 1. Tutorial with helper areas (!!).
+"Press the '/s' key to slide down the hole."
+"Switches and buttons sometimes open doors."
+"Press the '/s' key to stick to the wall.  Press the '/s' key to begin climbing"
+"Press the '/s' key to jump. Gish jumps best when he is" the most compressed, bouncing up and down will help you get higher and higher."
+"Press the '/s' key to break these blocks."
+"Press the '/s' key to stick to the wall.  Press the '/s' and '/s' keys to climb. If you are stuck to the floor, quickly release and then press the stick key"
