@@ -354,11 +354,8 @@ void mainmenu(void)
       //checkmusic();
 
       prevjoymenunum=2;
-      int numplayers = 0;
-      int controllers[4] = {-1, -1, -1, -1};
-      int presets[4] = {-1, -1, -1, -1};
-      setup_presets_to_players(&numplayers, controllers, presets, 2);
-      bind_presets_to_controls(numplayers, controllers, presets);
+      if (versus_numplayers < 2)
+          setup_presets_to_players(&versus_numplayers, versus_is_joystick, versus_presets, 2);
       versusmenu();
       joymenunum=prevjoymenunum;
       }
@@ -482,8 +479,8 @@ void setup_presets_to_players(int* numplayers_out, int* controllers, int* preset
 
         SDL_GL_SwapWindow(globalwindow);
 
+        // joining
         if (numplayers < 4){
-            // joining
             for (int kbpreset=0;kbpreset<numkeyboardpresets;kbpreset++){
                 int jump_button = keyboardpresets[kbpreset].key[KEYALIAS_JUMP];
                 if (keyboard[jump_button] && !prevkeyboard[jump_button]){
@@ -503,32 +500,32 @@ void setup_presets_to_players(int* numplayers_out, int* controllers, int* preset
                     break;
                 }
             }
-            // leaving
-            for (int player_index = numplayers-1; player_index >= 0; player_index--){
-                if (controllers[player_index] == 0){
-                    int heavy_button = keyboardpresets[presets[player_index]].key[KEYALIAS_HEAVY];
-                    if (keyboard[heavy_button] && !prevkeyboard[heavy_button]){
-                        // found, exclude them
-                        for (; player_index < numplayers-1; player_index++){
-                            controllers[player_index] = controllers[player_index+1];
-                            presets[player_index] = presets[player_index+1];
-                        }
-                        numplayers--;
-                        break;
+        }
+        // leaving
+        for (int player_index = numplayers-1; player_index >= 0; player_index--){
+            if (controllers[player_index] == 0){
+                int heavy_button = keyboardpresets[presets[player_index]].key[KEYALIAS_HEAVY];
+                if (keyboard[heavy_button] && !prevkeyboard[heavy_button]){
+                    // found, exclude them
+                    for (; player_index < numplayers-1; player_index++){
+                        controllers[player_index] = controllers[player_index+1];
+                        presets[player_index] = presets[player_index+1];
                     }
+                    numplayers--;
+                    break;
                 }
-                else {
-                    int joystick_index = joystickpresets[controllers[player_index]-1].joysticknum;
-                    int heavy_button = joystickpresets[controllers[player_index]-1].button[KEYALIAS_HEAVY];
-                    if (joystick[joystick_index].button[heavy_button] && !prevjoystick[joystick_index].button[heavy_button]){
-                        // found, exclude them
-                        for (; player_index < numplayers-1; player_index++){
-                            controllers[player_index] = controllers[player_index+1];
-                            presets[player_index] = presets[player_index+1];
-                        }
-                        numplayers--;
-                        break;
+            }
+            else {
+                int joystick_index = joystickpresets[controllers[player_index]-1].joysticknum;
+                int heavy_button = joystickpresets[controllers[player_index]-1].button[KEYALIAS_HEAVY];
+                if (joystick[joystick_index].button[heavy_button] && !prevjoystick[joystick_index].button[heavy_button]){
+                    // found, exclude them
+                    for (; player_index < numplayers-1; player_index++){
+                        controllers[player_index] = controllers[player_index+1];
+                        presets[player_index] = presets[player_index+1];
                     }
+                    numplayers--;
+                    break;
                 }
             }
         }
@@ -595,6 +592,11 @@ void versusmenu(void)
       createmenuitem(TXT_COLLECTION,(512|TEXT_CENTER),444,16,1.0f,1.0f,1.0f,1.0f);
       setmenuitem(MO_HOTKEY,SCAN_C);
       }
+    else{
+        createmenuitemempty(); //stupid
+    }
+    int change_players = createmenuitem(TXT_CHANGE_PLAYERS, 640|TEXT_END, 0, 16, 1.0f,1.0f,1.0f,1.0f);
+    setmenuitem(MO_HOTKEY,SCAN_H);
 
     checksystemmessages();
     checkkeyboard();
@@ -625,9 +627,13 @@ void versusmenu(void)
 
     SDL_GL_SwapWindow(globalwindow);
 
-    for (count=1;count<=7;count++)
-    if (menuitem[count].active)
-      versusmodemenu(count-1);
+    for (count=1;count<7;count++)
+    if (menuitem[count].active){
+        bind_presets_to_controls(versus_numplayers, versus_is_joystick, versus_presets);
+        versusmodemenu(count-1);
+    }
+    if (menuitem[change_players].active)
+        setup_presets_to_players(&versus_numplayers, versus_is_joystick, versus_presets, 2);
     }
 
   resetmenuitems();

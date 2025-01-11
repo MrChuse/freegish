@@ -43,6 +43,10 @@ _control joystickpresets[PRESETS_LENGTH];
 int numkeyboardpresets;
 int numjoystickpresets;
 
+int versus_numplayers = 0;
+int versus_is_joystick[4] = {-1, -1, -1, -1};
+int versus_presets[4] = {-1, -1, -1, -1};
+
 // local
 char slider_was_clicked = -1;
 int clicked_keyboard_preset = -1;
