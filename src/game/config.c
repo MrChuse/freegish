@@ -218,6 +218,13 @@ void loadconfig(void)
       optionreadint(&joystickpresets[count].button[count2],tempstr);
       }
   }
+  optionreadint(&versus_numplayers,"versus_numplayers=");
+  for (count=0; count<versus_numplayers;count++){
+    sprintf(tempstr,"versus_is_joystick%d=",count+1);
+    optionreadint(&versus_is_joystick[count],tempstr);
+    sprintf(tempstr,"versus_presets%d=",count+1);
+    optionreadint(&versus_presets[count],tempstr);
+  }
 
   windowinfo.resolutionx=config.resolutionx;
   windowinfo.resolutiony=config.resolutiony;
@@ -299,6 +306,13 @@ void saveconfig(void)
       }
   }
 
+  optionwriteint(fp, &versus_numplayers,"versus_numplayers=");
+  for (count=0; count<versus_numplayers;count++){
+    sprintf(tempstr,"versus_is_joystick%d=",count+1);
+    optionwriteint(fp, &versus_is_joystick[count],tempstr);
+    sprintf(tempstr,"versus_presets%d=",count+1);
+    optionwriteint(fp, &versus_presets[count],tempstr);
+  }
   fclose(fp);
   }
 

@@ -354,11 +354,8 @@ void mainmenu(void)
       //checkmusic();
 
       prevjoymenunum=2;
-      int numplayers = 0;
-      int controllers[4] = {-1, -1, -1, -1};
-      int presets[4] = {-1, -1, -1, -1};
-      setup_presets_to_players(&numplayers, controllers, presets, 2);
-      bind_presets_to_controls(numplayers, controllers, presets);
+      if (versus_numplayers < 2)
+          setup_presets_to_players(&versus_numplayers, versus_is_joystick, versus_presets, 2);
       versusmenu();
       joymenunum=prevjoymenunum;
       }
@@ -595,6 +592,11 @@ void versusmenu(void)
       createmenuitem(TXT_COLLECTION,(512|TEXT_CENTER),444,16,1.0f,1.0f,1.0f,1.0f);
       setmenuitem(MO_HOTKEY,SCAN_C);
       }
+    else{
+        createmenuitemempty(); //stupid
+    }
+    int change_players = createmenuitem(TXT_CHANGE_PLAYERS, 640|TEXT_END, 0, 16, 1.0f,1.0f,1.0f,1.0f);
+    setmenuitem(MO_HOTKEY,SCAN_H);
 
     checksystemmessages();
     checkkeyboard();
@@ -625,9 +627,13 @@ void versusmenu(void)
 
     SDL_GL_SwapWindow(globalwindow);
 
-    for (count=1;count<=7;count++)
-    if (menuitem[count].active)
-      versusmodemenu(count-1);
+    for (count=1;count<7;count++)
+    if (menuitem[count].active){
+        bind_presets_to_controls(versus_numplayers, versus_is_joystick, versus_presets);
+        versusmodemenu(count-1);
+    }
+    if (menuitem[change_players].active)
+        setup_presets_to_players(&versus_numplayers, versus_is_joystick, versus_presets, 2);
     }
 
   resetmenuitems();

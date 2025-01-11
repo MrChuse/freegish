@@ -70,4 +70,8 @@ extern _control joystickpresets[PRESETS_LENGTH];
 extern int numkeyboardpresets;
 extern int numjoystickpresets;
 
+extern int versus_numplayers;
+extern int versus_is_joystick[4];
+extern int versus_presets[4];
+
 #endif /* GISH_GAME_OPTIONS_H */
