@@ -287,7 +287,7 @@ void loadplayers(void){
     char path[PATH_MAX];
 
     for (count=0;count<8;count++){
-        player[count].numplayers = 1;
+        player[count].numplayers = 0;
     }
 
     if ((fp=fopen(userpath(path,NULL,"gish.pla"),"rb"))!=NULL){
@@ -302,7 +302,7 @@ void loadplayers(void){
                 fread2(&player[count].gamepassed,4,1,fp);
                 fread2(&player[count].highscore,4,1,fp);
                 fread2(player[count].unlock,4,16,fp);
-                player[count].numplayers = 1;
+                player[count].numplayers = 0;
                 for (int count2 = 0; count2 < 4; count2++){
                     player[count].is_joystick[count2] = -1;
                     player[count].presets[count2] = -1;
@@ -319,7 +319,7 @@ void loadplayers(void){
                 fread2(&player[count].gamepassed,4,1,fp);
                 fread2(&player[count].highscore,4,1,fp);
                 fread2(player[count].unlock,4,16,fp);
-                player[count].numplayers = 1;
+                player[count].numplayers = 0;
                 for (int count2 = 0; count2 < 4; count2++){
                     player[count].is_joystick[count2] = -1;
                     player[count].presets[count2] = -1;
@@ -351,6 +351,10 @@ void playerstartmenu(void)
 
   if (playernum==-1)
     return;
+
+  if (player[playernum].numplayers == 0){
+    setup_presets_to_players(&player[playernum].numplayers, player[playernum].is_joystick, player[playernum].presets, 1);
+  }
 
   resetmenuitems();
 
