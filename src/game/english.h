@@ -361,6 +361,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define TXT_SOUND_OFF										"Sound Off"
 #define TXT_MUSIC_ON										"Music On"
 #define TXT_MUSIC_OFF										"Music Off"
+#define TXT_PICK_DATAPACK									"Pick Datapack"
 #define TXT_PLAYER											"Player"
 #define TXT_KEY												"Key"
 #define TXT_NEW_PRESET										"New preset"

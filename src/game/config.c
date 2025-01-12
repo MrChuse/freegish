@@ -226,6 +226,14 @@ void loadconfig(void)
     optionreadint(&versus_presets[count],tempstr);
   }
 
+  optionreadstring(datapacks_folder, "datapacks_folder=", 32);
+  optionreadstring(loaded_datapack, "loaded_datapack=", 32);
+
+  if (datapacks_folder[0] == 0)
+      strcpy(datapacks_folder, "datapacks");
+  if (loaded_datapack[0] == 0)
+      strcpy(loaded_datapack, "freegish");
+
   windowinfo.resolutionx=config.resolutionx;
   windowinfo.resolutiony=config.resolutiony;
   windowinfo.bitsperpixel=config.bitsperpixel;
@@ -313,6 +321,8 @@ void saveconfig(void)
     sprintf(tempstr,"versus_presets%d=",count+1);
     optionwriteint(fp, &versus_presets[count],tempstr);
   }
+  optionwritestring(fp, datapacks_folder, "datapacks_folder=", 32);
+  optionwritestring(fp, loaded_datapack, "loaded_datapack=", 32);
   fclose(fp);
   }
 

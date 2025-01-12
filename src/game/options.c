@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../video/opengl.h"
 
+#include "../game/config.h"
 #include "../game/options.h"
 #include "../game/english.h"
 #include "../input/keyboard.h"
@@ -47,9 +48,8 @@ int versus_numplayers;
 int versus_is_joystick[4];
 int versus_presets[4];
 
-char datapacks_folder[256] = "datapacks";
-int num_loaded_datapacks = 1;
-char loaded_datapack[256] = "freegish";
+char datapacks_folder[32];
+char loaded_datapack[32];
 
 // local
 char slider_was_clicked = -1;
@@ -224,6 +224,9 @@ void optionsmenu(void){
   int x;
   count=0;
   int deletepreset = 0;
+  int picking_dataset = 0;
+  int num_known_datapacks = 0;
+  char known_datapacks[32][32];
 
   joystickmenu=0;
   resetmenuitems();
@@ -237,44 +240,52 @@ void optionsmenu(void){
     createmenuitem(TXT_BACK,0,0,16,1.0f,1.0f,1.0f,1.0f);
     setmenuitem(MO_HOTKEY,SCAN_ESC);
     
-    int first_keyboard_preset_item = numofmenuitems;
-    for (count = 0; count < numkeyboardpresets; count++){
-        createmenuitem(keyboardpresets[count].name,16,140 + 40 * count,16,1.0f,1.0f,1.0f,1.0f);
-    }
-
-    int create_new_keyboard_preset = createmenuitem(TXT_NEW_PRESET,16,140 + 40 * count,16,1.0f,1.0f,1.0f,1.0f);
-
-    int first_joystick_preset_item = numofmenuitems;
-    for (count = 0; count < numjoystickpresets; count++){
-        createmenuitem(joystickpresets[count].name,320,140 + 40 * count,16,1.0f,1.0f,1.0f,1.0f);
-    }
-
-    int create_new_joystick_preset = createmenuitem(TXT_NEW_PRESET,320,140 + 40 * count,16,1.0f,1.0f,1.0f,1.0f);
-
+    int first_keyboard_preset_item = -1;
+    int create_new_keyboard_preset = -1;
+    int first_joystick_preset_item = -1;
+    int create_new_joystick_preset = -1;
     int preset_name_input = -1;
     int create_button = -1;
-    x = 16;
-    if (clicked_keyboard_preset != -1){
-        count=140+clicked_keyboard_preset*40-16;
-        preset_name_input = createmenuitem("                ",x,count,16,1.0f,1.0f,1.0f,1.0f);
-        setmenuitem(MO_STRINGINPUT,keyboardpresets[clicked_keyboard_preset].name);
-        menuitem[numofmenuitems-1].active = 1;
-        if (keyboardpresets[clicked_keyboard_preset].name[0]!=0){
-            create_button = createmenuitem(TXT_CREATE,x,count+32,16,1.0f,1.0f,1.0f,1.0f);
+
+    if (!picking_dataset){
+        first_keyboard_preset_item = numofmenuitems;;
+        for (count = 0; count < numkeyboardpresets; count++){
+            createmenuitem(keyboardpresets[count].name,16,140 + 40 * count,16,1.0f,1.0f,1.0f,1.0f);
         }
-    }
-    x = 320;
-    if (clicked_joystick_preset != -1){
-        count=140+clicked_joystick_preset*40-16;
-        preset_name_input = createmenuitem("                ",x,count,16,1.0f,1.0f,1.0f,1.0f);
-        setmenuitem(MO_STRINGINPUT,joystickpresets[clicked_joystick_preset].name);
-        menuitem[numofmenuitems-1].active = 1;
-        if (joystickpresets[clicked_joystick_preset].name[0]!=0){
-            create_button = createmenuitem(TXT_CREATE,x,count+32,16,1.0f,1.0f,1.0f,1.0f);
+
+        create_new_keyboard_preset = createmenuitem(TXT_NEW_PRESET,16,140 + 40 * count,16,1.0f,1.0f,1.0f,1.0f);
+
+        first_joystick_preset_item = numofmenuitems;
+        for (count = 0; count < numjoystickpresets; count++){
+            createmenuitem(joystickpresets[count].name,320,140 + 40 * count,16,1.0f,1.0f,1.0f,1.0f);
         }
+
+        create_new_joystick_preset = createmenuitem(TXT_NEW_PRESET,320,140 + 40 * count,16,1.0f,1.0f,1.0f,1.0f);
+
+        x = 16;
+        if (clicked_keyboard_preset != -1){
+            count=140+clicked_keyboard_preset*40-16;
+            preset_name_input = createmenuitem("                ",x,count,16,1.0f,1.0f,1.0f,1.0f);
+            setmenuitem(MO_STRINGINPUT,keyboardpresets[clicked_keyboard_preset].name);
+            menuitem[numofmenuitems-1].active = 1;
+            if (keyboardpresets[clicked_keyboard_preset].name[0]!=0){
+                create_button = createmenuitem(TXT_CREATE,x,count+32,16,1.0f,1.0f,1.0f,1.0f);
+            }
+        }
+        x = 320;
+        if (clicked_joystick_preset != -1){
+            count=140+clicked_joystick_preset*40-16;
+            preset_name_input = createmenuitem("                ",x,count,16,1.0f,1.0f,1.0f,1.0f);
+            setmenuitem(MO_STRINGINPUT,joystickpresets[clicked_joystick_preset].name);
+            menuitem[numofmenuitems-1].active = 1;
+            if (joystickpresets[clicked_joystick_preset].name[0]!=0){
+                create_button = createmenuitem(TXT_CREATE,x,count+32,16,1.0f,1.0f,1.0f,1.0f);
+            }
+        }
+        int delete_preset = createmenuitem(TXT_DELETE_PRESET,320|TEXT_CENTER,140 + max(numkeyboardpresets, numjoystickpresets) * 40 + 32,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &deletepreset);
     }
-    int delete_preset = createmenuitem(TXT_DELETE_PRESET,320|TEXT_CENTER,140 + max(numkeyboardpresets, numjoystickpresets) * 40 + 32,16,1.0f,1.0f,1.0f,1.0f);
-    setmenuitem(MO_TOGGLE, &deletepreset);
+
 
     int video_options = createmenuitem(TXT_VIDEOOPTIONS,320,0,16,1.0f,1.0f,1.0f,1.0f);
     setmenuitem(MO_HOTKEY,SCAN_V);
@@ -299,6 +310,19 @@ void optionsmenu(void){
       createmenuitem(TXT_MUSIC_OFF,0,48,16,1.0f,1.0f,1.0f,1.0f);
       setmenuitem(MO_SET,&option.music,1);
       }
+    int datapack_picker = createmenuitem(TXT_PICK_DATAPACK,0,64,16,1.0f,1.0f,1.0f,1.0f);
+    int loaded_datapack_item = -1;
+    int y = 64;
+    int offset = 16;
+    if (!picking_dataset){
+        loaded_datapack_item = createmenuitem(loaded_datapack,0,y+offset,16,1.0f,1.0f,1.0f,1.0f);
+    }
+    else{
+        loaded_datapack_item = numofmenuitems;
+        for (count = 0; count < num_known_datapacks; count++){
+          createmenuitem(known_datapacks[count],0, y+offset*(count+1),16,1.0f,1.0f,1.0f,1.0f);
+      }
+    }
 
     checksystemmessages();
     checkkeyboard();
@@ -308,10 +332,12 @@ void optionsmenu(void){
 
     setuptextdisplay();
 
-    drawtext(TXT_KEYBOARD_PRESETS,16+16,140-20,10,1.0f,1.0f,1.0f,1.0f);
-    drawtext(TXT_JOYSTICK_PRESETS,320+16,140-20,10,1.0f,1.0f,1.0f,1.0f);
-    drawtext(TXT_JOYSTICKS,320,90,10,1.0f,1.0f,1.0f,1.0f);
-    drawtext(TXT_CONNECTED": /i",320,100,10,1.0f,1.0f,1.0f,1.0f, numofjoysticks);
+    if (!picking_dataset){
+        drawtext(TXT_KEYBOARD_PRESETS,16+16,140-20,10,1.0f,1.0f,1.0f,1.0f);
+        drawtext(TXT_JOYSTICK_PRESETS,320+16,140-20,10,1.0f,1.0f,1.0f,1.0f);
+        drawtext(TXT_JOYSTICKS,320,90,10,1.0f,1.0f,1.0f,1.0f);
+        drawtext(TXT_CONNECTED": /i",320,100,10,1.0f,1.0f,1.0f,1.0f, numofjoysticks);
+    }
 
     //drawtext("delete_preset /i",640|TEXT_END,470,10,1.0f,1.0f,1.0f,1.0f, delete_preset);
     //drawtext("create_button /i",640|TEXT_END,460,10,1.0f,1.0f,1.0f,1.0f, create_button);
@@ -365,65 +391,93 @@ void optionsmenu(void){
         slider_was_clicked = -1;
     }
 
-    // creating new presets
-    if (menuitem[create_new_keyboard_preset].active) {
-        clicked_keyboard_preset = numkeyboardpresets;
-        clicked_joystick_preset = -1;
-        menuitem[create_new_keyboard_preset].active = 0;
-    }
-    if (menuitem[create_new_joystick_preset].active) {
-        clicked_keyboard_preset = -1;
-        clicked_joystick_preset = numjoystickpresets;
-        menuitem[create_new_joystick_preset].active = 0;
-    }
-
-    // filled in the name of the preset, create button was pressed
-    if (create_button != -1)
-    if (menuitem[create_button].active){
-        if(clicked_keyboard_preset != -1){
-            numkeyboardpresets++;
-            clicked_keyboard_preset = -1;
-            set_profile_buttons_menu(&keyboardpresets[numkeyboardpresets-1], 0);
+    if (!picking_dataset){
+        // clicked a keyboard preset from a list
+        for (count = first_keyboard_preset_item; count < create_new_keyboard_preset; count++){
+            if (menuitem[count].active){
+                if (deletepreset){
+                    for (int preset_index = count - first_keyboard_preset_item; preset_index < numkeyboardpresets-1; preset_index++){
+                        keyboardpresets[preset_index] = keyboardpresets[preset_index+1];
+                    }
+                    numkeyboardpresets--;
+                    deletepreset = 0;
+                    menuitem[count].active = 0;
+                }
+                else{
+                    set_profile_buttons_menu(&keyboardpresets[count - first_keyboard_preset_item], 0);
+                }
+            }
         }
-        if(clicked_joystick_preset != -1){
-            numjoystickpresets++;
+        // clicked a joystick preset from a list
+        for (count = first_joystick_preset_item; count < create_new_joystick_preset; count++){
+            if (menuitem[count].active){
+                if (deletepreset){
+                    for (int preset_index = count - first_joystick_preset_item; preset_index < numjoystickpresets-1; preset_index++){
+                        joystickpresets[preset_index] = joystickpresets[preset_index+1];
+                    }
+                    numjoystickpresets--;
+                    deletepreset = 0;
+                    menuitem[count].active = 0;
+                }
+                else{
+                    set_profile_buttons_menu(&joystickpresets[count - first_joystick_preset_item], 1);
+                }
+            }
+        }
+        // creating new presets
+        if (menuitem[create_new_keyboard_preset].active) {
+            clicked_keyboard_preset = numkeyboardpresets;
             clicked_joystick_preset = -1;
-            set_profile_buttons_menu(&joystickpresets[numjoystickpresets-1], 1);
+            menuitem[create_new_keyboard_preset].active = 0;
         }
-        menuitem[create_button].active = 0;
-    }
+        if (menuitem[create_new_joystick_preset].active) {
+            clicked_keyboard_preset = -1;
+            clicked_joystick_preset = numjoystickpresets;
+            menuitem[create_new_joystick_preset].active = 0;
+        }
+        // filled in the name of the preset, create button was pressed
+        if (create_button != -1)
+        if (menuitem[create_button].active){
+            if(clicked_keyboard_preset != -1){
+                numkeyboardpresets++;
+                clicked_keyboard_preset = -1;
+                set_profile_buttons_menu(&keyboardpresets[numkeyboardpresets-1], 0);
+            }
+            if(clicked_joystick_preset != -1){
+                numjoystickpresets++;
+                clicked_joystick_preset = -1;
+                set_profile_buttons_menu(&joystickpresets[numjoystickpresets-1], 1);
+            }
+            menuitem[create_button].active = 0;
+        }
+        if (menuitem[datapack_picker].active || menuitem[loaded_datapack_item].active){
+            char path[MAX_PATH];
+            strcpy(path, datapacks_folder);
+            listfiles(path,"*",known_datapacks,1);
+            num_known_datapacks=0;
+            while (known_datapacks[num_known_datapacks][0]!=0)
+              num_known_datapacks++;
 
-    for (count = first_keyboard_preset_item; count < create_new_keyboard_preset; count++){
-        if (menuitem[count].active){
-            if (deletepreset){
-                for (int preset_index = count - first_keyboard_preset_item; preset_index < numkeyboardpresets-1; preset_index++){
-                    keyboardpresets[preset_index] = keyboardpresets[preset_index+1];
-                }
-                numkeyboardpresets--;
-                deletepreset = 0;
-                menuitem[count].active = 0;
-            }
-            else{
-                set_profile_buttons_menu(&keyboardpresets[count - first_keyboard_preset_item], 0);
+            menuitem[datapack_picker].active = 0;
+            menuitem[loaded_datapack_item].active = 0;
+            picking_dataset = 1;
+        }
+    }
+    else{
+        // picking a datapack
+        if (menuitem[datapack_picker].active){
+            picking_dataset = 0;
+            menuitem[datapack_picker].active = 0;
+        }
+        for (count = 0; count < num_known_datapacks; count++){
+            if (menuitem[loaded_datapack_item + count].active){
+                strcpy(loaded_datapack, known_datapacks[count]);
+                picking_dataset = 0;
+                menuitem[loaded_datapack_item + count].active = 0;
+                load_datapack();
             }
         }
     }
-    for (count = first_joystick_preset_item; count < create_new_joystick_preset; count++){
-        if (menuitem[count].active){
-            if (deletepreset){
-                for (int preset_index = count - first_joystick_preset_item; preset_index < numjoystickpresets-1; preset_index++){
-                    joystickpresets[preset_index] = joystickpresets[preset_index+1];
-                }
-                numjoystickpresets--;
-                deletepreset = 0;
-                menuitem[count].active = 0;
-            }
-            else{
-                set_profile_buttons_menu(&joystickpresets[count - first_joystick_preset_item], 1);
-            }
-        }
-    }
-
     if (menuitem[video_options].active)
       videooptionsmenu();
   }
@@ -435,6 +489,12 @@ void optionsmenu(void){
     joystickmenu=1;
 }
 
+void load_datapack(void){
+  load_all_static_textures();
+  loadanimations();
+  if (config.sound)
+    loadoggs();
+}
 
 void videooptionsmenu(void)
   {
