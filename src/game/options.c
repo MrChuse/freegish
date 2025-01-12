@@ -43,9 +43,13 @@ _control joystickpresets[PRESETS_LENGTH];
 int numkeyboardpresets;
 int numjoystickpresets;
 
-int versus_numplayers = 0;
-int versus_is_joystick[4] = {-1, -1, -1, -1};
-int versus_presets[4] = {-1, -1, -1, -1};
+int versus_numplayers;
+int versus_is_joystick[4];
+int versus_presets[4];
+
+char datapacks_folder[256] = "datapacks";
+int num_loaded_datapacks = 1;
+char loaded_datapack[256] = "freegish";
 
 // local
 char slider_was_clicked = -1;

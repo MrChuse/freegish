@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../video/texture.h"
 #include "../game/animation.h"
+#include "../game/options.h"
 #include "../game/debug.h"
 #include "../sdl/endian.h"
 #include "../sdl/file.h"
@@ -271,13 +272,14 @@ void changeextension(char *filename, const char *newextension)
 
 int loadtexturefile(const char *filename, unsigned int **rgba, int *width, int *height)
 {
-	int changeddir;
 	int result = -1;
 
-	char *newfilename = strdup(filename);
-	char *extension = getextension(newfilename);
+	char filename_with_folder[256];
+	sprintf(filename_with_folder, "%s/%s/texture/%s", datapacks_folder, loaded_datapack, filename); // MAYBE: add ability to list several datapacks and try loading them one by one
+	filename_with_folder[255] = 0; // safety first
 
-	changeddir=chdir("texture");
+	char *newfilename = strdup(filename_with_folder);
+	char *extension = getextension(newfilename);
 
 	if (extension == NULL) {
 		size_t len;
@@ -326,9 +328,6 @@ int loadtexturefile(const char *filename, unsigned int **rgba, int *width, int *
 	}
 
 	free(newfilename);
-
-	if (changeddir==0)
-		chdir("..");
 
 	return result;
 }
