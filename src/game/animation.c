@@ -402,6 +402,7 @@ void objectanimation(void)
   }
 
 void loadanimationpart(char* animationpartfilename, int animationpart[2], int animationlength){
+    char filename_with_folder[256];
     char filename[32] = "bibatk01.png";
     animationpart[0]=numofanimations;
     animationpart[1]=animationlength;
@@ -409,7 +410,9 @@ void loadanimationpart(char* animationpartfilename, int animationpart[2], int an
     for (int count=1;count<=animationpart[1];count++){
         filename[6]=48+(count/10)%10;
         filename[7]=48+count%10;
-        loadtexture(numofanimations,filename,0,GL_CLAMP_TO_EDGE,GL_CLAMP_TO_EDGE,GL_LINEAR,GL_LINEAR);
+        sprintf(filename_with_folder, "../animation/%s", filename); // MAYBE: add ability to list several datapacks and try loading them one by one
+	    filename_with_folder[255] = 0; // safety first
+        loadtexture(numofanimations,filename_with_folder,0,GL_CLAMP_TO_EDGE,GL_CLAMP_TO_EDGE,GL_LINEAR,GL_LINEAR);
         numofanimations++;
     }
 }
@@ -417,7 +420,12 @@ void loadanimationpart(char* animationpartfilename, int animationpart[2], int an
 void loadheadpart(int* numberinanimationpart, char* filename, int framenum){
     filename[7] = 48 + framenum; // "mumhed00.png" -> "mumhed01.png"
     *numberinanimationpart=numofanimations;
-    loadtexture(numofanimations,filename,0,GL_CLAMP_TO_EDGE,GL_CLAMP_TO_EDGE,GL_LINEAR,GL_LINEAR);
+
+    char filename_with_folder[256];
+	sprintf(filename_with_folder, "../animation/%s", filename); // MAYBE: add ability to list several datapacks and try loading them one by one
+	filename_with_folder[255] = 0; // safety first
+
+    loadtexture(numofanimations,filename_with_folder,0,GL_CLAMP_TO_EDGE,GL_CLAMP_TO_EDGE,GL_LINEAR,GL_LINEAR);
     numofanimations++;
 }
 
