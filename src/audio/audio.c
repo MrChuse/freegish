@@ -51,6 +51,7 @@ char oggdata[OGGBUFFERSIZE];
 ALuint oggsource;
 ALuint oggbuffer[2];
 
+// IMPORTANT
 void setupaudio(void)
   {
   int count;
@@ -58,7 +59,6 @@ void setupaudio(void)
   //ALenum format;
   //ALvoid *data;
   //ALboolean loop;
-  int changeddir;
 
   aldevice=alcOpenDevice(NULL);
   if (aldevice!=NULL)
@@ -78,8 +78,6 @@ void setupaudio(void)
     alGenBuffers(1,&oggbuffer[count]);
   for (count=0;count<30;count++)
     alGenBuffers(1,&soundbuffer[count]);
-
-  changeddir=chdir("sound");
 
   loadwav(0,"blockbreak.wav");
   loadwav(1,"rockhit.wav");
@@ -103,18 +101,10 @@ void setupaudio(void)
   loadwav(19,"necksnap.wav");
   loadwav(20,"tarball.wav");
 
-  if (changeddir==0)
-    chdir("..");
-
-  changeddir=chdir("data");
-
-  loadwav(21,"cubemap.dat");
-  loadwav(22,"specular.dat");
-  loadwav(23,"stencil.dat");
-  loadwav(24,"pixel.dat");
-
-  if (changeddir==0)
-    chdir("..");
+  loadwav(21,"../data/cubemap.dat");
+  loadwav(22,"../data/specular.dat");
+  loadwav(23,"../data/stencil.dat");
+  loadwav(24,"../data/pixel.dat");
 
   alGenSources(1,&oggsource);
 
@@ -219,6 +209,10 @@ void loadwav(int buffernum,char *filename)
   unsigned char *wavbuffer;
   unsigned char temp;
   ALenum format;
+
+  char filename_with_folder[256];
+  sprintf(filename_with_folder, "%s/%s/sound/%s", datapacks_folder, loaded_datapack, filename); // MAYBE: add ability to list several datapacks and try loading them one by one
+  filename_with_folder[255] = 0; // safety first
 
   if (SDL_LoadWAV(filename,&wavspec,&wavbuffer,&wavlength))
     {
