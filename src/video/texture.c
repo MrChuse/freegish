@@ -592,7 +592,7 @@ int texturecmp(int texturenum1, int texturenum2){
     return 0;
 }
 
-int load_all_textures(void){
+int load_all_text_textures(void){
 	int numoftextures = 0;
 	char texturelist[1024][32];
 

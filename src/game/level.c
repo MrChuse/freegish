@@ -254,7 +254,7 @@ void savelevel(char *filename)
             if (texture[count].filename[0] == 0){
                 // look for the texture in some folders
                 if (numofloadedtextures == 0) // didn't load textures yet
-                    numofloadedtextures = load_all_textures();
+                    numofloadedtextures = load_all_text_textures();
                 look_for_texture_in_folders(count, numofloadedtextures);
             }
 
