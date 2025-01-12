@@ -243,8 +243,7 @@ void mainmenu(void)
   loadtexture(383+60,"rtar.png",0,GL_CLAMP_TO_EDGE,GL_CLAMP_TO_EDGE,GL_LINEAR,GL_LINEAR);
 
   numofanimations=1024;
-
-  //loadanimations();
+  loadanimations();
 
   if (config.sound)
     loadoggs();
