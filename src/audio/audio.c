@@ -58,7 +58,6 @@ void setupaudio(void)
   //ALenum format;
   //ALvoid *data;
   //ALboolean loop;
-  int changeddir;
 
   aldevice=alcOpenDevice(NULL);
   if (aldevice!=NULL)
@@ -79,43 +78,6 @@ void setupaudio(void)
   for (count=0;count<30;count++)
     alGenBuffers(1,&soundbuffer[count]);
 
-  changeddir=chdir("sound");
-
-  loadwav(0,"blockbreak.wav");
-  loadwav(1,"rockhit.wav");
-  loadwav(2,"fleshhit.wav");
-  loadwav(3,"ropebreak.wav");
-  loadwav(4,"chainbreak.wav");
-  loadwav(5,"gishhit.wav");
-  loadwav(6,"rockfriction.wav");
-  loadwav(7,"squish.wav");
-  loadwav(8,"secrets1.wav");
-  loadwav(9,"secrets2.wav");
-  loadwav(10,"amber.wav");
-  loadwav(11,"nibattack.wav");
-  loadwav(12,"visattack.wav");
-  loadwav(13,"bobattack.wav");
-  loadwav(14,"switch.wav");
-  loadwav(15,"points.wav");
-  loadwav(16,"gishhurt.wav");
-  loadwav(17,"splash.wav");
-  loadwav(18,"lava.wav");
-  loadwav(19,"necksnap.wav");
-  loadwav(20,"tarball.wav");
-
-  if (changeddir==0)
-    chdir("..");
-
-  changeddir=chdir("data");
-
-  loadwav(21,"cubemap.dat");
-  loadwav(22,"specular.dat");
-  loadwav(23,"stencil.dat");
-  loadwav(24,"pixel.dat");
-
-  if (changeddir==0)
-    chdir("..");
-
   alGenSources(1,&oggsource);
 
   for (count=0;count<12;count++)
@@ -123,6 +85,34 @@ void setupaudio(void)
 
   //alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
   }
+
+void loadwavs(void){
+    loadwav(0,"blockbreak.wav");
+    loadwav(1,"rockhit.wav");
+    loadwav(2,"fleshhit.wav");
+    loadwav(3,"ropebreak.wav");
+    loadwav(4,"chainbreak.wav");
+    loadwav(5,"gishhit.wav");
+    loadwav(6,"rockfriction.wav");
+    loadwav(7,"squish.wav");
+    loadwav(8,"secrets1.wav");
+    loadwav(9,"secrets2.wav");
+    loadwav(10,"amber.wav");
+    loadwav(11,"nibattack.wav");
+    loadwav(12,"visattack.wav");
+    loadwav(13,"bobattack.wav");
+    loadwav(14,"switch.wav");
+    loadwav(15,"points.wav");
+    loadwav(16,"gishhurt.wav");
+    loadwav(17,"splash.wav");
+    loadwav(18,"lava.wav");
+    loadwav(19,"necksnap.wav");
+    loadwav(20,"tarball.wav");
+    loadwav(21,"../data/cubemap.dat");
+    loadwav(22,"../data/specular.dat");
+    loadwav(23,"../data/stencil.dat");
+    loadwav(24,"../data/pixel.dat");
+}
 
 int updateogg(void)
   {
@@ -219,6 +209,10 @@ void loadwav(int buffernum,char *filename)
   unsigned char *wavbuffer;
   unsigned char temp;
   ALenum format;
+
+  char filename_with_folder[256];
+  sprintf(filename_with_folder, "%s/%s/sound/%s", datapacks_folder, loaded_datapack, filename); // MAYBE: add ability to list several datapacks and try loading them one by one
+  filename_with_folder[255] = 0; // safety first
 
   if (SDL_LoadWAV(filename,&wavspec,&wavbuffer,&wavlength))
     {

@@ -27,9 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define PRESETS_LENGTH 16
 
 void optionsmenu(void);
+void load_datapack(void);
 void videooptionsmenu(void);
 void drawsliderbars(void);
-void optionsmenu2(void);
 
 typedef enum {
 	KEYALIAS_LEFT = 0,
@@ -73,5 +73,8 @@ extern int numjoystickpresets;
 extern int versus_numplayers;
 extern int versus_is_joystick[4];
 extern int versus_presets[4];
+
+extern char datapacks_folder[32];
+extern char loaded_datapack[32];
 
 #endif /* GISH_GAME_OPTIONS_H */

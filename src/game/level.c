@@ -34,6 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../game/level.h"
 #include "../game/config.h"
+#include "../game/options.h"
 #include "../game/block.h"
 #include "../game/editor.h"
 #include "../game/game.h"
@@ -198,7 +199,8 @@ void savelevel(char *filename)
   if (!textureused[count])
     texture[count].sizex=0;
   */
-  sprintf(path, "level/%s", filename);
+  sprintf(path, "%s/%s/level/%s", datapacks_folder, loaded_datapack, filename); // MAYBE: add ability to list several datapacks and try loading them one by one
+  path[255] = 0; // safety first
 
   if ((fp=fopen(path,"wb"))!=NULL)
     {
@@ -253,7 +255,7 @@ void savelevel(char *filename)
             if (texture[count].filename[0] == 0){
                 // look for the texture in some folders
                 if (numofloadedtextures == 0) // didn't load textures yet
-                    numofloadedtextures = load_all_textures();
+                    numofloadedtextures = load_all_text_textures();
                 look_for_texture_in_folders(count, numofloadedtextures);
             }
 
@@ -316,10 +318,11 @@ void loadlevel(char *filename)
 
   x=0x17AF2E03;
 
-  char filename2[64];
-  sprintf(filename2, "level/%s", filename);
+  char filename_with_folder[256];
+  sprintf(filename_with_folder, "%s/%s/level/%s", datapacks_folder, loaded_datapack, filename); // MAYBE: add ability to list several datapacks and try loading them one by one
+  filename_with_folder[255] = 0; // safety first
 
-  if ((fp=fopen(filename2,"rb"))!=NULL)
+  if ((fp=fopen(filename_with_folder,"rb"))!=NULL)
     {
     fread2(&version,4,1,fp);
 
@@ -429,7 +432,8 @@ void loadlevel(char *filename)
           decryptdata(x,4*texture[count].sizex*texture[count].sizey/4);
           memcpy(texture[count].rgba[0],cryptdata,4*texture[count].sizex*texture[count].sizey);
 
-          memset(texture[count].filename, 0, sizeof(texture[count].filename));
+          if (game.editing)
+            texture[count].filename[0] = 0;
 
           texture[count].mipmaplevels=1;
           texture[count].format=GL_RGBA;

@@ -402,6 +402,7 @@ void objectanimation(void)
   }
 
 void loadanimationpart(char* animationpartfilename, int animationpart[2], int animationlength){
+    char filename_with_folder[256];
     char filename[32] = "bibatk01.png";
     animationpart[0]=numofanimations;
     animationpart[1]=animationlength;
@@ -409,7 +410,9 @@ void loadanimationpart(char* animationpartfilename, int animationpart[2], int an
     for (int count=1;count<=animationpart[1];count++){
         filename[6]=48+(count/10)%10;
         filename[7]=48+count%10;
-        loadtexture(numofanimations,filename,0,GL_CLAMP_TO_EDGE,GL_CLAMP_TO_EDGE,GL_LINEAR,GL_LINEAR);
+        sprintf(filename_with_folder, "../animation/%s", filename); // MAYBE: add ability to list several datapacks and try loading them one by one
+	    filename_with_folder[255] = 0; // safety first
+        loadtexture(numofanimations,filename_with_folder,0,GL_CLAMP_TO_EDGE,GL_CLAMP_TO_EDGE,GL_LINEAR,GL_LINEAR);
         numofanimations++;
     }
 }
@@ -417,13 +420,16 @@ void loadanimationpart(char* animationpartfilename, int animationpart[2], int an
 void loadheadpart(int* numberinanimationpart, char* filename, int framenum){
     filename[7] = 48 + framenum; // "mumhed00.png" -> "mumhed01.png"
     *numberinanimationpart=numofanimations;
-    loadtexture(numofanimations,filename,0,GL_CLAMP_TO_EDGE,GL_CLAMP_TO_EDGE,GL_LINEAR,GL_LINEAR);
+
+    char filename_with_folder[256];
+	sprintf(filename_with_folder, "../animation/%s", filename); // MAYBE: add ability to list several datapacks and try loading them one by one
+	filename_with_folder[255] = 0; // safety first
+
+    loadtexture(numofanimations,filename_with_folder,0,GL_CLAMP_TO_EDGE,GL_CLAMP_TO_EDGE,GL_LINEAR,GL_LINEAR);
     numofanimations++;
 }
 
 void loadanimation(int animationnum, char* standname, int standlength, char* walkname, int walklength, char* attackname, int attacklength, char* diename, int dielength, int head_needed, char* headname){
-    if (animation[animationnum].loaded!=2) return;
-
     animation[animationnum].loaded=1;
 
     loadanimationpart(standname, animation[animationnum].stand, standlength);
@@ -447,10 +453,7 @@ void loadanimation(int animationnum, char* standname, int standlength, char* wal
 
 void loadanimations(void)
   {
-  int changeddir;
-
-  changeddir=chdir("animation");
-
+  numofanimations=1024;
   loadanimation(0,  "bibsta", 6, "bibwlk", 9, "bibatk", 9, "nibdie", 9, 0, "");
   loadanimation(1,  "nibsta", 6, "nibwlk", 9, "nibatk", 9, "nibdie", 9, 0, "");
   loadanimation(2,  "ribsta", 6, "ribwlk", 9, "ribatk", 9, "ribdie", 9, 0, "");
@@ -468,7 +471,4 @@ void loadanimations(void)
   loadanimation(14, "ghosta", 5, "ghowlk", 5, "ghoatk", 8, "ghodie", 9, 0, "");
   loadanimation(15, "bassta", 6, "baswlk", 9, "basatk", 9, "basdie", 9, 0, "");
   loadanimation(16, "satsta", 6, "satwlk", 9, "satatk", 9, "ribdie", 9, 0, "");
-
-  if (changeddir==0)
-    chdir("..");
   }

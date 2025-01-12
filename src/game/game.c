@@ -664,8 +664,6 @@ void gameloop(void)
       if (animation[count].loaded==0)
         animation[count].loaded=2;
 
-      loadanimations();
-
       editlevel();
 
       savelevel("backup.lvl");

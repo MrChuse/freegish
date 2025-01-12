@@ -114,9 +114,10 @@ void editlevel(void)
 
     int y = 0;
     int offset = 16;
-    createmenuitem(TXT_GAMETYPE,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+    int first_gametype_item = -1;
+    int gametype = createmenuitem(TXT_GAMETYPE,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
     if (!editing_level_gametype){
-      createmenuitem(GAMETYPE_NAMES[level.gametype],(640|TEXT_END),y+offset,16,1.0f,1.0f,1.0f,1.0f);
+      first_gametype_item = createmenuitem(GAMETYPE_NAMES[level.gametype],(640|TEXT_END),y+offset,16,1.0f,1.0f,1.0f,1.0f);
       createmenuitem(TXT_GAMETIME,(640|TEXT_END),y+offset*2,16,1.0f,1.0f,1.0f,1.0f);
       setmenuitem(MO_INTINPUT,&level.time);
       createmenuitem(TXT_RED"  ",(640|TEXT_END),y+offset*4,16,1.0f,1.0f,1.0f,1.0f);
@@ -127,6 +128,7 @@ void editlevel(void)
       setmenuitem(MO_FLOATINPUT,&level.ambient[editor.mode][2]);
     }
     else{
+      first_gametype_item = numofmenuitems;
       for (count = 0; count < GAMETYPE_COUNT; count++){
           createmenuitem(GAMETYPE_NAMES[gametypes[count]],(640|TEXT_END), offset + offset*count,16,1.0f,1.0f,1.0f,1.0f);
       }
@@ -136,17 +138,16 @@ void editlevel(void)
     checkmouse();
     checkmenuitems();
 
-    if ((menuitem[3].active || menuitem[4].active) && !editing_level_gametype){
+    if ((menuitem[gametype].active || menuitem[first_gametype_item].active) && !editing_level_gametype){
         editing_level_gametype = 1;
-        menuitem[3].active = 0;
-        menuitem[4].active = 0;
+        menuitem[gametype].active = 0;
+        menuitem[first_gametype_item].active = 0;
     }
     if (editing_level_gametype){
         for (count = 0; count < GAMETYPE_COUNT; count++)
-            if (menuitem[4+count].active){ // watchout for this 4 when creating new menu items
-                level.gametype = gametypes[count];
+            if (menuitem[first_gametype_item+count].active){
                 editing_level_gametype = 0;
-                menuitem[4+count].active = 0;
+                menuitem[first_gametype_item+count].active = 0;
             }
     }
 
