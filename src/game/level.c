@@ -34,6 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../game/level.h"
 #include "../game/config.h"
+#include "../game/options.h"
 #include "../game/block.h"
 #include "../game/editor.h"
 #include "../game/game.h"
@@ -316,10 +317,11 @@ void loadlevel(char *filename)
 
   x=0x17AF2E03;
 
-  char filename2[64];
-  sprintf(filename2, "level/%s", filename);
+  char filename_with_folder[256];
+  sprintf(filename_with_folder, "%s/%s/level/%s", datapacks_folder, loaded_datapack, filename); // MAYBE: add ability to list several datapacks and try loading them one by one
+  filename_with_folder[255] = 0; // safety first
 
-  if ((fp=fopen(filename2,"rb"))!=NULL)
+  if ((fp=fopen(filename_with_folder,"rb"))!=NULL)
     {
     fread2(&version,4,1,fp);
 
