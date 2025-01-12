@@ -199,7 +199,8 @@ void savelevel(char *filename)
   if (!textureused[count])
     texture[count].sizex=0;
   */
-  sprintf(path, "level/%s", filename);
+  sprintf(path, "%s/%s/level/%s", datapacks_folder, loaded_datapack, filename); // MAYBE: add ability to list several datapacks and try loading them one by one
+  path[255] = 0; // safety first
 
   if ((fp=fopen(path,"wb"))!=NULL)
     {
@@ -431,7 +432,8 @@ void loadlevel(char *filename)
           decryptdata(x,4*texture[count].sizex*texture[count].sizey/4);
           memcpy(texture[count].rgba[0],cryptdata,4*texture[count].sizex*texture[count].sizey);
 
-          memset(texture[count].filename, 0, sizeof(texture[count].filename));
+          if (game.editing)
+            texture[count].filename[0] = 0;
 
           texture[count].mipmaplevels=1;
           texture[count].format=GL_RGBA;
