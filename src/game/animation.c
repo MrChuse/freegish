@@ -430,8 +430,6 @@ void loadheadpart(int* numberinanimationpart, char* filename, int framenum){
 }
 
 void loadanimation(int animationnum, char* standname, int standlength, char* walkname, int walklength, char* attackname, int attacklength, char* diename, int dielength, int head_needed, char* headname){
-    if (animation[animationnum].loaded!=2) return;
-
     animation[animationnum].loaded=1;
 
     loadanimationpart(standname, animation[animationnum].stand, standlength);
@@ -455,10 +453,6 @@ void loadanimation(int animationnum, char* standname, int standlength, char* wal
 
 void loadanimations(void)
   {
-  int changeddir;
-
-  changeddir=chdir("animation");
-
   loadanimation(0,  "bibsta", 6, "bibwlk", 9, "bibatk", 9, "nibdie", 9, 0, "");
   loadanimation(1,  "nibsta", 6, "nibwlk", 9, "nibatk", 9, "nibdie", 9, 0, "");
   loadanimation(2,  "ribsta", 6, "ribwlk", 9, "ribatk", 9, "ribdie", 9, 0, "");
@@ -476,7 +470,4 @@ void loadanimations(void)
   loadanimation(14, "ghosta", 5, "ghowlk", 5, "ghoatk", 8, "ghodie", 9, 0, "");
   loadanimation(15, "bassta", 6, "baswlk", 9, "basatk", 9, "basdie", 9, 0, "");
   loadanimation(16, "satsta", 6, "satwlk", 9, "satatk", 9, "ribdie", 9, 0, "");
-
-  if (changeddir==0)
-    chdir("..");
   }
