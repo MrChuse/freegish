@@ -155,11 +155,7 @@ int main (int argc,char *argv[])
   font.sizex=640;
   font.sizey=480;
 
-  loadtexture(TEXT_START_TEXTURE,"font00.png",0,GL_CLAMP,GL_CLAMP,GL_LINEAR,GL_LINEAR);
-  loadtexture(TEXT_START_TEXTURE+1,"font01.png",0,GL_CLAMP,GL_CLAMP,GL_LINEAR,GL_LINEAR);
-
-  loadtexture(768,"mouse00.png",0,GL_CLAMP,GL_CLAMP,GL_LINEAR,GL_LINEAR);
-  loadtexture(769,"mouse00.png",0,GL_CLAMP,GL_CLAMP,GL_LINEAR,GL_LINEAR);
+  load_font_and_mouse();
 
   setupmenuitems();
 

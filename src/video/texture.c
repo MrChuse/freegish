@@ -818,6 +818,12 @@ void load_all_static_textures(void){
     loadtexture(383+60,"rtar.png",0,GL_CLAMP_TO_EDGE,GL_CLAMP_TO_EDGE,GL_LINEAR,GL_LINEAR);
 }
 
+void load_font_and_mouse(void){
+    loadtexture(TEXT_START_TEXTURE,"font00.png",0,GL_CLAMP,GL_CLAMP,GL_LINEAR,GL_LINEAR);
+    loadtexture(TEXT_START_TEXTURE+1,"font01.png",0,GL_CLAMP,GL_CLAMP,GL_LINEAR,GL_LINEAR);
+    loadtexture(768,"mouse00.png",0,GL_CLAMP,GL_CLAMP,GL_LINEAR,GL_LINEAR);
+    loadtexture(769,"mouse00.png",0,GL_CLAMP,GL_CLAMP,GL_LINEAR,GL_LINEAR);
+}
 void look_for_texture_in_folders(int texturenum, int numofloadedtextures){
 	for (int count = 0; count<numofloadedtextures; count++)
 	if(texturecmp(texturenum, ANIMATIONS_START_TEXTURE+count) == 0){ // same texture

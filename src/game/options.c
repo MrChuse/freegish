@@ -490,10 +490,13 @@ void optionsmenu(void){
 }
 
 void load_datapack(void){
+  load_font_and_mouse();
   load_all_static_textures();
   loadanimations();
-  if (config.sound)
+  if (config.sound){
     loadoggs();
+    loadwavs();
+  }
 }
 
 void videooptionsmenu(void)

@@ -32,6 +32,7 @@ void setuptexture(int texturenum);
 int texturecmp(int texturenum1, int texturenum2);
 int load_all_text_textures(void);
 void load_all_static_textures(void);
+void load_font_and_mouse(void);
 void look_for_texture_in_folders(int texturenum, int numofloadedtextures);
 
 // im going to try to lay out all the used textures
