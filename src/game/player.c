@@ -994,7 +994,9 @@ void singlelevelmenu(void)
 
       loadstorylevel(count);
 
-      gameloop();
+      while (!(game.exit == GAMEEXIT_EXITGAME || game.exit == GAMEEXIT_WON))
+        gameloop();
+      game.exit = GAMEEXIT_NONE;
 
       savereplay(count+100);
 
