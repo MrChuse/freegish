@@ -190,6 +190,8 @@ void gameloop(void)
         }
       }
 
+    int reset_level = -1;
+
     numofmenuitems=0;
     if (game.exit==GAMEEXIT_NONE)
       {
@@ -214,9 +216,9 @@ void gameloop(void)
       if (game.levelnum<64)
         {
         if (level.gametype==GAMETYPE_CAMPAIGN && (game.levelnum>0 || mappack.active) && !game.playreplay)
-          createmenuitem(TXT_RESETLEVEL_MINUSONE,(320|TEXT_CENTER),count,16,1.0f,1.0f,1.0f,1.0f);
+          reset_level = createmenuitem(TXT_RESETLEVEL_MINUSONE,(320|TEXT_CENTER),count,16,1.0f,1.0f,1.0f,1.0f);
         else
-          createmenuitem(TXT_RESETLEVEL,(320|TEXT_CENTER),count,16,1.0f,1.0f,1.0f,1.0f);
+          reset_level = createmenuitem(TXT_RESETLEVEL,(320|TEXT_CENTER),count,16,1.0f,1.0f,1.0f,1.0f);
         setmenuitem(MO_HOTKEY,SCAN_R);
         if (level.gametype==GAMETYPE_CAMPAIGN)
           setmenuitem(MO_SET,&game.exit,GAMEEXIT_DIED);
@@ -279,13 +281,13 @@ void gameloop(void)
 
     if (game.exit==GAMEEXIT_INGAMEMENU)
     if (level.gametype!=GAMETYPE_CAMPAIGN)
-    if (menuitem[1].active)
+    if (menuitem[reset_level].active)
       {
       setuplevel();
       setupgame();
 
       game.exit=GAMEEXIT_NONE;
-      menuitem[1].active=0;
+      menuitem[reset_level].active=0;
       }
 
     if (game.dialog>0)
