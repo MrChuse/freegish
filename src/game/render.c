@@ -410,7 +410,7 @@ void renderlevel(void)
 
   glDisable(GL_STENCIL_TEST);
 
-  if (debug_character_positions){
+  if (debug_objectlinks){
         float vec[3];
         glDisable(GL_TEXTURE_2D);
         for (count = 0; count < numofobjects; count++){

@@ -267,6 +267,12 @@ void editlevel(void)
     drawtext(TXT_TILESET":/i",0,368,16,1.0f,1.0f,1.0f,1.0f,level.tileset);
     drawtext(TXT_TILE":/i",0,400,16,1.0f,1.0f,1.0f,1.0f,editor.blocknum);
 
+    // draw mouse pos
+    screen_to_world(mouse.x, mouse.y, &vec[0], &vec[1]);
+    x = (int)vec[0];
+    y = (int)vec[1];
+    drawtext("/i /i", mouse.x, mouse.y, 10, 1.0f,1.0f,1.0f,1.0f, x, y);
+
     if (debug_grid_blocknums)
     for (count=view.position[1]-view.zoomy;count<=view.position[1]+view.zoomy;count++)
     if (count>=0 && count<256)

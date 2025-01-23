@@ -338,6 +338,12 @@ void optionsmenu(void){
         createmenuitem(TXT_debug_character_positions,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
         setmenuitem(MO_TOGGLE, &debug_character_positions);
         y += 16;
+        createmenuitem(TXT_debug_objectnums,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_objectnums);
+        y += 16;
+        createmenuitem(TXT_debug_objectlinks,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_objectlinks);
+        y += 16;
         createmenuitem(TXT_debug_unlocks,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
         setmenuitem(MO_TOGGLE, &debug_unlocks);
         y += 16;

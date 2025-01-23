@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern int debug_level_saveload;
 extern int debug_texture_load;
 extern int debug_character_positions;
+extern int debug_objectnums;
+extern int debug_objectlinks;
 extern int debug_unlocks;
 extern int debug_grid_blocknums;
 extern int debug_next_level;

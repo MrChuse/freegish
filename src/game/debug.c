@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 int debug_level_saveload=0;
 int debug_texture_load=0;
 int debug_character_positions = 0;
+int debug_objectnums = 0;
+int debug_objectlinks = 0;
 int debug_unlocks = 0;
 int debug_grid_blocknums = 0;
 int debug_next_level = 0;

@@ -366,6 +366,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define TXT_debug_level_saveload							"debug_level_saveload"
 #define TXT_debug_texture_load								"debug_texture_load"
 #define TXT_debug_character_positions						"debug_character_positions"
+#define TXT_debug_objectnums								"debug_objectnums"
+#define TXT_debug_objectlinks								"debug_objectlinks"
 #define TXT_debug_unlocks									"debug_unlocks"
 #define TXT_debug_grid_blocknums							"debug_grid_blocknums"
 #define TXT_debug_next_level								"debug_next_level"
