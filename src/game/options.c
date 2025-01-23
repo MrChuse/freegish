@@ -349,6 +349,12 @@ void optionsmenu(void){
         y += 16;
         createmenuitem(TXT_debug_render_bonds,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
         setmenuitem(MO_TOGGLE, &debug_render_bonds);
+        y += 16;
+        createmenuitem(TXT_debug_render_player_vertices,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_render_player_vertices);
+        y += 16;
+        createmenuitem(TXT_debug_render_level_lines,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_render_level_lines);
     }
     checksystemmessages();
     checkkeyboard();

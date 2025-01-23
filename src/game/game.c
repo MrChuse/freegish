@@ -474,6 +474,10 @@ void gameloop(void)
     renderlevelfore();
     if (debug_render_bonds)
         renderbonds();
+    if (debug_render_player_vertices)
+        renderplayervertices();
+    if (debug_render_level_lines)
+        renderlevellines();
 
     if (game.oldschool==1)// || game.oldschool==3)
       {
