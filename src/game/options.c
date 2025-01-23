@@ -346,6 +346,9 @@ void optionsmenu(void){
         y += 16;
         createmenuitem(TXT_debug_next_level,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
         setmenuitem(MO_TOGGLE, &debug_next_level);
+        y += 16;
+        createmenuitem(TXT_debug_render_bonds,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_render_bonds);
     }
     checksystemmessages();
     checkkeyboard();

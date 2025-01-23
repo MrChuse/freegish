@@ -369,6 +369,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define TXT_debug_unlocks									"debug_unlocks"
 #define TXT_debug_grid_blocknums							"debug_grid_blocknums"
 #define TXT_debug_next_level								"debug_next_level"
+#define TXT_debug_render_bonds								"debug_render_bonds"
 #define TXT_PLAYER											"Player"
 #define TXT_KEY												"Key"
 #define TXT_NEW_PRESET										"New preset"

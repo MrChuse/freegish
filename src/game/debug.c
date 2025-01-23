@@ -28,3 +28,4 @@ int debug_character_positions = 0;
 int debug_unlocks = 0;
 int debug_grid_blocknums = 0;
 int debug_next_level = 0;
+int debug_render_bonds = 0;

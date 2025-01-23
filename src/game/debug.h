@@ -27,5 +27,6 @@ extern int debug_character_positions;
 extern int debug_unlocks;
 extern int debug_grid_blocknums;
 extern int debug_next_level;
+extern int debug_render_bonds;
 
 #endif /* GISH_GAME_DEBUG_H */

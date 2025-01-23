@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <stdlib.h>
 #include <time.h>
 
+#include "../game/debug.h"
 #include "../game/game.h"
 #include "../game/animation.h"
 #include "../game/gameaudio.h"
@@ -471,7 +472,8 @@ void gameloop(void)
 
     renderlevel();
     renderlevelfore();
-    //renderbonds();
+    if (debug_render_bonds)
+        renderbonds();
 
     if (game.oldschool==1)// || game.oldschool==3)
       {
