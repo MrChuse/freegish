@@ -355,6 +355,8 @@ void playerstartmenu(void)
   if (player[playernum].numplayers == 0){
     setup_presets_to_players(&player[playernum].numplayers, player[playernum].is_joystick, player[playernum].presets, 1);
   }
+  bind_presets_to_controls(player[playernum].numplayers, player[playernum].is_joystick, player[playernum].presets);
+  game.numofplayers = player[playernum].numplayers;
 
   resetmenuitems();
 
@@ -519,8 +521,6 @@ void playerstartmenu(void)
       game.songnum=-1;
       checkmusic();
 
-      bind_presets_to_controls(player[playernum].numplayers, player[playernum].is_joystick, player[playernum].presets);
-      game.numofplayers = player[playernum].numplayers;
       pregamemenu();
 
       player[playernum].levelnum=game.levelnum;
@@ -577,8 +577,6 @@ void playerstartmenu(void)
       game.songnum=-1;
       checkmusic();
 
-      bind_presets_to_controls(player[playernum].numplayers, player[playernum].is_joystick, player[playernum].presets);
-      game.numofplayers = player[playernum].numplayers;
       pregamemenu();
 
       player[playernum].levelnum=game.levelnum;
@@ -636,12 +634,12 @@ void playerstartmenu(void)
 
     if (menuitem[7].active)
       {
-      bind_presets_to_controls(player[playernum].numplayers, player[playernum].is_joystick, player[playernum].presets);
-      game.numofplayers = player[playernum].numplayers;
       custommenu();
       }
     if (menuitem[change_players].active){
         setup_presets_to_players(&player[playernum].numplayers, player[playernum].is_joystick, player[playernum].presets, 1);
+        bind_presets_to_controls(player[playernum].numplayers, player[playernum].is_joystick, player[playernum].presets);
+        game.numofplayers = player[playernum].numplayers;
     }
     if (next_level != -1)
     if (menuitem[next_level].active){
@@ -996,7 +994,9 @@ void singlelevelmenu(void)
 
       loadstorylevel(count);
 
-      gameloop();
+      while (!(game.exit == GAMEEXIT_EXITGAME || game.exit == GAMEEXIT_WON))
+        gameloop();
+      game.exit = GAMEEXIT_NONE;
 
       savereplay(count+100);
 

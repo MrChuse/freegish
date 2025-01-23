@@ -690,7 +690,7 @@ void gamedisplay(void)
         world_to_screen(midpoint[0], midpoint[1], &vec[0], &vec[1]);
         drawtext("mid/i /i /i", (int)vec[0],(int)vec[1], 10, 1.0f, 1.0f, 1.0f, 1.0f, (int)midpoint[0], (int)midpoint[1], (int)distance_to_midpoint);
     }
-    if (debug_character_positions){
+    if (debug_objectnums){
         float vec[2];
         for (count = 0; count < numofobjects; count++){
             world_to_screen(object[count].position[0], object[count].position[1], &vec[0], &vec[1]);

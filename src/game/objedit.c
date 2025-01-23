@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <math.h>
 
+#include "../game/debug.h"
 #include "../game/objedit.h"
 #include "../game/animation.h"
 #include "../game/editor.h"
@@ -160,6 +161,7 @@ void editlevelobjects(void)
     y = (int)vec[1];
     drawtext("/i /i", mouse.x, mouse.y, 10, 1.0f,1.0f,1.0f,1.0f, x, y);
 
+    if (debug_objectnums)
     for (count = 0; count < level.numofobjects; count++){
         world_to_screen(level.object[count].position[0], level.object[count].position[1], &vec[0], &vec[1]);
         x = (int)vec[0];

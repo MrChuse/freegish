@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../video/opengl.h"
 
+#include "../game/debug.h"
 #include "../game/config.h"
 #include "../game/options.h"
 #include "../game/english.h"
@@ -225,6 +226,7 @@ void optionsmenu(void){
   count=0;
   int deletepreset = 0;
   int picking_dataset = 0;
+  int debug_options = 0;
   int num_known_datapacks = 0;
   char known_datapacks[32][32];
 
@@ -247,7 +249,7 @@ void optionsmenu(void){
     int preset_name_input = -1;
     int create_button = -1;
 
-    if (!picking_dataset){
+    if (!picking_dataset && !debug_options){
         first_keyboard_preset_item = numofmenuitems;;
         for (count = 0; count < numkeyboardpresets; count++){
             createmenuitem(keyboardpresets[count].name,16,140 + 40 * count,16,1.0f,1.0f,1.0f,1.0f);
@@ -286,10 +288,6 @@ void optionsmenu(void){
         setmenuitem(MO_TOGGLE, &deletepreset);
     }
 
-
-    int video_options = createmenuitem(TXT_VIDEOOPTIONS,320,0,16,1.0f,1.0f,1.0f,1.0f);
-    setmenuitem(MO_HOTKEY,SCAN_V);
-
     if (option.sound)
       {
       createmenuitem(TXT_SOUND_ON,0,32,16,1.0f,1.0f,1.0f,1.0f);
@@ -323,7 +321,47 @@ void optionsmenu(void){
           createmenuitem(known_datapacks[count],0, y+offset*(count+1),16,1.0f,1.0f,1.0f,1.0f);
       }
     }
-
+    y = 0;
+    int video_options = createmenuitem(TXT_VIDEOOPTIONS,(640|TEXT_END),0,16,1.0f,1.0f,1.0f,1.0f);
+    setmenuitem(MO_HOTKEY,SCAN_V);
+    y += 16;
+    createmenuitem(TXT_DEBUG_OPTIONS,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+    setmenuitem(MO_TOGGLE, &debug_options);
+    if (debug_options){
+        y += 16;
+        createmenuitem(TXT_debug_level_saveload,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_level_saveload);
+        y += 16;
+        createmenuitem(TXT_debug_texture_load,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_texture_load);
+        y += 16;
+        createmenuitem(TXT_debug_character_positions,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_character_positions);
+        y += 16;
+        createmenuitem(TXT_debug_objectnums,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_objectnums);
+        y += 16;
+        createmenuitem(TXT_debug_objectlinks,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_objectlinks);
+        y += 16;
+        createmenuitem(TXT_debug_unlocks,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_unlocks);
+        y += 16;
+        createmenuitem(TXT_debug_grid_blocknums,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_grid_blocknums);
+        y += 16;
+        createmenuitem(TXT_debug_next_level,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_next_level);
+        y += 16;
+        createmenuitem(TXT_debug_render_bonds,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_render_bonds);
+        y += 16;
+        createmenuitem(TXT_debug_render_player_vertices,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_render_player_vertices);
+        y += 16;
+        createmenuitem(TXT_debug_render_level_lines,(640|TEXT_END),y,16,1.0f,1.0f,1.0f,1.0f);
+        setmenuitem(MO_TOGGLE, &debug_render_level_lines);
+    }
     checksystemmessages();
     checkkeyboard();
     checkmouse();
@@ -332,7 +370,7 @@ void optionsmenu(void){
 
     setuptextdisplay();
 
-    if (!picking_dataset){
+    if (!picking_dataset && !debug_options){
         drawtext(TXT_KEYBOARD_PRESETS,16+16,140-20,10,1.0f,1.0f,1.0f,1.0f);
         drawtext(TXT_JOYSTICK_PRESETS,320+16,140-20,10,1.0f,1.0f,1.0f,1.0f);
         drawtext(TXT_JOYSTICKS,320,90,10,1.0f,1.0f,1.0f,1.0f);
